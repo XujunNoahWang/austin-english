@@ -5,8 +5,8 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Austin English - 双语英语学习',
-  description: '专为中国学生设计的双语英语学习平台',
+  title: 'Austin English',
+  description: '个性化英语复习工具，配合孩子的英语课程，家长自建专属复习内容库',
 }
 
 export default function RootLayout({
