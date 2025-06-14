@@ -113,12 +113,27 @@ public/audio/letters/
 
 ## 🔧 配置说明
 
-### Unsplash API
-项目使用Unsplash API获取学习图片。如需修改API密钥，请编辑：
-```typescript
-// src/app/child/page.tsx
-const UNSPLASH_ACCESS_KEY = 'your-api-key';
-```
+### Unsplash API 重要说明 ⚠️
+
+**当前限制**：项目使用的是作者的个人Unsplash API密钥，每小时限制50次请求。
+
+**如果遇到图片加载失败**，说明API配额已用完，建议：
+
+1. **申请自己的API密钥**：
+   - 访问 [Unsplash Developers](https://unsplash.com/developers)
+   - 注册账号并创建新应用
+   - 获取Access Key（免费账号每小时50次请求）
+
+2. **替换API密钥**：
+   ```typescript
+   // 文件位置：src/app/child/page.tsx
+   // 找到第12行左右，替换为你的密钥
+   const UNSPLASH_ACCESS_KEY = 'your-new-api-key-here';
+   ```
+
+3. **重新部署**：
+   - 如果是本地运行：重启开发服务器
+   - 如果是Vercel部署：推送代码到GitHub自动重新部署
 
 ### 音频映射
 字母音频映射配置在：
