@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Letter, Word, Sentence, Profile } from '../../types/profile';
 import { getCurrentProfileId, getProfile, saveProfile } from '../../lib/profileManager';
+import { getCurrentLanguage, getParentTexts } from '../../lib/i18n';
 
 import { SunIcon, MoonIcon, PencilIcon, ArrowLeftIcon, UserIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
@@ -38,27 +39,7 @@ const letterPronunciations: Record<string, string[]> = {
   'Z': ['/z/']
 };
 
-// 排序类型
-const SORT_TYPES = [
-  { label: '手动排序', value: 'manual' },
-  { label: '按首字母排序 (A-Z)', value: 'alpha_asc' },
-  { label: '按首字母排序 (Z-A)', value: 'alpha_desc' },
-  { label: '按日期排序 (旧→新)', value: 'date_asc' },
-  { label: '按日期排序 (新→旧)', value: 'date_desc' },
-  { label: '按重要程度排序 (低→高)', value: 'star_asc' },
-  { label: '按重要程度排序 (高→低)', value: 'star_desc' },
-];
-
-// 句子排序类型与单词一致
-const SENTENCE_SORT_TYPES = [
-  { label: '手动排序', value: 'manual' },
-  { label: '按首字母排序 (A-Z)', value: 'alpha_asc' },
-  { label: '按首字母排序 (Z-A)', value: 'alpha_desc' },
-  { label: '按日期排序 (旧→新)', value: 'date_asc' },
-  { label: '按日期排序 (新→旧)', value: 'date_desc' },
-  { label: '按重要程度排序 (低→高)', value: 'star_asc' },
-  { label: '按重要程度排序 (高→低)', value: 'star_desc' },
-];
+// 排序类型 - 将在组件内部根据语言动态生成
 
 export default function ParentPage() {
   const [letters, setLetters] = useState<Letter[]>([]);
@@ -77,9 +58,24 @@ export default function ParentPage() {
   const [editWord, setEditWord] = useState<{ id: string; text: string } | null>(null);
   const [editSentence, setEditSentence] = useState<{ id: string; text: string } | null>(null);
   const [currentProfile, setCurrentProfile] = useState<Profile | null>(null);
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
+
+  // 获取当前语言的文本
+  const t = getParentTexts(language);
+
+  // 动态生成排序类型选项
+  const getSortTypes = () => [
+    { label: language === 'zh' ? '手动排序' : 'Manual Sort', value: 'manual' },
+    { label: language === 'zh' ? '按首字母排序 (A-Z)' : 'Sort by Letter (A-Z)', value: 'alpha_asc' },
+    { label: language === 'zh' ? '按首字母排序 (Z-A)' : 'Sort by Letter (Z-A)', value: 'alpha_desc' },
+    { label: language === 'zh' ? '按日期排序 (旧→新)' : 'Sort by Date (Old→New)', value: 'date_asc' },
+    { label: language === 'zh' ? '按日期排序 (新→旧)' : 'Sort by Date (New→Old)', value: 'date_desc' },
+          { label: language === 'zh' ? '按熟练程度排序 (低→高)' : 'Sort by Proficiency (Low→High)', value: 'star_asc' },
+      { label: language === 'zh' ? '按熟练程度排序 (高→低)' : 'Sort by Proficiency (High→Low)', value: 'star_desc' },
+  ];
 
   // 加载档案数据的函数
-  const loadProfileData = () => {
+  const loadProfileData = useCallback(() => {
     // 初始化字母数据
     const initialLetters: Letter[] = Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((char) => ({
       id: char,
@@ -148,9 +144,13 @@ export default function ParentPage() {
       // 出错时也重定向到首页
       window.location.href = '/';
     }
-  };
+  }, []);
 
   useEffect(() => {
+    // 加载语言设置
+    const currentLang = getCurrentLanguage();
+    setLanguage(currentLang);
+    
     // 初始加载档案数据
     loadProfileData();
 
@@ -378,7 +378,7 @@ export default function ParentPage() {
     sentenceDragOverItem.current = null;
   };
 
-  // 句子重要程度
+          // 句子熟练程度
   const handleSetSentenceStar = (id: string, star: number) => {
     setSentences(sentences.map(sentence => sentence.id === id ? { ...sentence, star } : sentence));
   };
@@ -437,14 +437,14 @@ export default function ParentPage() {
                 <button
                   onClick={() => window.location.href = '/'}
                   className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
-                  title="返回首页"
+                  title={t.backToHome}
                 >
                   <ArrowLeftIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                 </button>
                 <button
                   onClick={() => window.location.href = '/child'}
                   className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800"
-                  title="孩子页面"
+                  title={language === 'zh' ? '孩子页面' : 'Child Page'}
                 >
                   <UserIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                 </button>
@@ -452,11 +452,11 @@ export default function ParentPage() {
               {/* 标题区域 */}
               <div>
                 <h1 className="text-3xl font-bold text-primary-600 dark:text-primary-300 mb-1">
-                  家长控制面板
+                  {t.title}
                 </h1>
                 {currentProfile && (
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    当前档案: {currentProfile.name}
+                    {t.profileName}: {currentProfile.name}
                   </p>
                 )}
               </div>
@@ -481,12 +481,12 @@ export default function ParentPage() {
             {/* 字母列 */}
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl h-[calc(100vh-8.3rem)] flex flex-col basis-[300px] max-w-[360px] min-w-[240px]">
               <h2 className="text-xl font-semibold mb-4 text-primary-600 dark:text-primary-300">
-                字母管理
+                {t.letterConfig}
               </h2>
               <div className="space-y-2 overflow-y-auto flex-1 pr-2">
                 {letters.length === 0 && (
                   <div className="text-center text-gray-500 py-4">
-                    正在加载字母数据...
+                    {t.loading}
                   </div>
                 )}
                 {letters.map((letter) => (
@@ -528,7 +528,7 @@ export default function ParentPage() {
             {/* 单词列 */}
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl h-[calc(100vh-8.3rem)] flex flex-col basis-[470px] max-w-[570px] min-w-[310px]">
               <h2 className="text-xl font-semibold mb-4 text-primary-600 dark:text-primary-300">
-                单词管理
+                {t.wordManagement}
               </h2>
               <div className="flex gap-2 mb-4">
                 <input
@@ -536,24 +536,24 @@ export default function ParentPage() {
                   value={newWord}
                   onChange={(e) => setNewWord(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleAddWord(); }}
-                  placeholder="输入新单词"
+                  placeholder={t.wordPlaceholder}
                   className="flex-1 p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
                 <button
                   onClick={handleAddWord}
                   className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
                 >
-                  添加
+                  {t.add}
                 </button>
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-gray-500">排序：</span>
+                <span className="text-sm text-gray-500">{language === 'zh' ? '排序：' : 'Sort:'}</span>
                 <select
                   value={sortType}
                   onChange={e => setSortType(e.target.value)}
                   className="p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-sm text-gray-900 dark:text-white"
                 >
-                  {SORT_TYPES.map(opt => (
+                  {getSortTypes().map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
@@ -577,7 +577,7 @@ export default function ParentPage() {
                             key={n}
                             className={`h-5 w-5 cursor-pointer ${n <= (word.star || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
                             onClick={() => handleSetWordStar(word.id, n)}
-                            title={`重要程度：${n}星`}
+                            title={language === 'zh' ? `熟练程度：${n}星` : `Proficiency: ${n} star${n > 1 ? 's' : ''}`}
                           />
                         ))}
                       </div>
@@ -587,16 +587,16 @@ export default function ParentPage() {
                       <button
                         onClick={() => handleEditWord(word.id, word.text)}
                         className="ml-2 px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                        title="修正"
+                        title={t.edit}
                       >
                         <PencilIcon className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteWord(word.id)}
                         className="ml-2 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
-                        title="删除"
+                        title={t.delete}
                       >
-                        删除
+                        {t.delete}
                       </button>
                     </div>
                   </div>
@@ -607,7 +607,7 @@ export default function ParentPage() {
             {/* 句子列 */}
             <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl h-[calc(100vh-8.3rem)] flex flex-col flex-1 min-w-[110px]">
               <h2 className="text-xl font-semibold mb-4 text-primary-600 dark:text-primary-300">
-                句子管理
+                {t.sentenceManagement}
               </h2>
               <div className="flex gap-2 mb-4">
                 <input
@@ -615,24 +615,24 @@ export default function ParentPage() {
                   value={newSentence}
                   onChange={(e) => setNewSentence(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleAddSentence(); }}
-                  placeholder="输入新句子"
+                  placeholder={t.sentencePlaceholder}
                   className="flex-1 p-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
                 <button
                   onClick={handleAddSentence}
                   className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
                 >
-                  添加
+                  {t.add}
                 </button>
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-gray-500">排序：</span>
+                <span className="text-sm text-gray-500">{language === 'zh' ? '排序：' : 'Sort:'}</span>
                 <select
                   value={sentenceSortType}
                   onChange={e => setSentenceSortType(e.target.value)}
                   className="p-1 rounded border dark:bg-gray-700 dark:border-gray-600 text-sm text-gray-900 dark:text-white"
                 >
-                  {SENTENCE_SORT_TYPES.map(opt => (
+                  {getSortTypes().map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
@@ -656,7 +656,7 @@ export default function ParentPage() {
                             key={n}
                             className={`h-5 w-5 cursor-pointer ${n <= (sentence.star || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
                             onClick={() => handleSetSentenceStar(sentence.id, n)}
-                            title={`重要程度：${n}星`}
+                            title={language === 'zh' ? `熟练程度：${n}星` : `Proficiency: ${n} star${n > 1 ? 's' : ''}`}
                           />
                         ))}
                       </div>
@@ -666,16 +666,16 @@ export default function ParentPage() {
                       <button
                         onClick={() => handleEditSentence(sentence.id, sentence.text)}
                         className="ml-2 px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                        title="修正"
+                        title={t.edit}
                       >
                         <PencilIcon className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteSentence(sentence.id)}
                         className="ml-2 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
-                        title="删除"
+                        title={t.delete}
                       >
-                        删除
+                        {t.delete}
                       </button>
                     </div>
                   </div>
@@ -688,7 +688,7 @@ export default function ParentPage() {
       {editWord && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">修正单词</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{t.editWord}</h3>
             <input
               type="text"
               value={editWord.text}
@@ -701,13 +701,13 @@ export default function ParentPage() {
                 onClick={() => setEditWord(null)}
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
               >
-                取消
+                {t.cancel}
               </button>
               <button
                 onClick={handleSaveEditWord}
                 className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
               >
-                确认
+                {t.confirm}
               </button>
             </div>
           </div>
@@ -716,7 +716,7 @@ export default function ParentPage() {
       {editSentence && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">修正句子</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{t.editSentence}</h3>
             <input
               type="text"
               value={editSentence.text}
@@ -729,13 +729,13 @@ export default function ParentPage() {
                 onClick={() => setEditSentence(null)}
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
               >
-                取消
+                {t.cancel}
               </button>
               <button
                 onClick={handleSaveEditSentence}
                 className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
               >
-                确认
+                {t.confirm}
               </button>
             </div>
           </div>

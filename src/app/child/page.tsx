@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { 
   ArrowLeftIcon, 
   ArrowRightIcon, 
@@ -10,6 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { getProfile, getCurrentProfileId, saveProfile } from '../../lib/profileManager';
+import { getCurrentLanguage, getChildTexts } from '../../lib/i18n';
 import { Profile, Letter, Word, Sentence } from '../../types/profile';
 
 // 字母发音配置
@@ -279,9 +281,13 @@ export default function ChildPage() {
   const [loadingImages, setLoadingImages] = useState<Record<string, boolean>>({});
   const [sentenceImages, setSentenceImages] = useState<Record<string, string>>({});
   const [loadingSentenceImages, setLoadingSentenceImages] = useState<Record<string, boolean>>({});
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
+
+  // 获取当前语言的文本
+  const t = getChildTexts(language);
 
   // 加载档案数据的函数
-  const loadProfileData = () => {
+  const loadProfileData = useCallback(() => {
     const profileId = getCurrentProfileId();
     if (profileId) {
       const profile = getProfile(profileId);
@@ -316,10 +322,10 @@ export default function ChildPage() {
         }
       }
     }
-  };
+  }, []);
 
   // 获取当前复习的数据
-  const getCurrentData = () => {
+  const getCurrentData = useCallback(() => {
     if (!currentProfile) return [];
     
     switch (reviewMode) {
@@ -332,7 +338,7 @@ export default function ChildPage() {
       default:
         return [];
     }
-  };
+  }, [currentProfile, reviewMode]);
 
   const currentData = getCurrentData();
   
@@ -367,7 +373,8 @@ export default function ChildPage() {
     
     if (newRandomMode) {
       // 开启随机模式，生成随机顺序
-      const newRandomOrder = generateRandomOrder(currentData.length);
+      const data = getCurrentData();
+      const newRandomOrder = generateRandomOrder(data.length);
       setRandomOrder(newRandomOrder);
       setCurrentIndex(0); // 重置到第一项
     } else {
@@ -378,6 +385,10 @@ export default function ChildPage() {
   };
 
   useEffect(() => {
+    // 加载语言设置
+    const currentLang = getCurrentLanguage();
+    setLanguage(currentLang);
+    
     // 初始加载档案数据
     loadProfileData();
 
@@ -425,7 +436,7 @@ export default function ChildPage() {
   }, []);
 
   // 预加载单词图片
-  const preloadWordImages = async (words: Word[]) => {
+  const preloadWordImages = useCallback(async (words: Word[]) => {
     const newImages: Record<string, string> = {};
     const newLoadingStates: Record<string, boolean> = {};
     
@@ -458,10 +469,10 @@ export default function ChildPage() {
       });
       return updated;
     });
-  };
+  }, [wordImages]);
 
   // 预加载句子图片
-  const preloadSentenceImages = async (sentences: Sentence[]) => {
+  const preloadSentenceImages = useCallback(async (sentences: Sentence[]) => {
     const newImages: Record<string, string> = {};
     const newLoadingStates: Record<string, boolean> = {};
     
@@ -497,7 +508,7 @@ export default function ChildPage() {
       });
       return updated;
     });
-  };
+  }, [sentenceImages, currentProfile]);
 
   // 当档案数据变化时，重置当前索引以避免越界
   useEffect(() => {
@@ -526,19 +537,20 @@ export default function ChildPage() {
     }
   }, [currentProfile, reviewMode, isRandomMode]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     }
-  };
+  }, [currentIndex]);
 
-  const handleNext = () => {
-    if (currentIndex < currentData.length - 1) {
+  const handleNext = useCallback(() => {
+    const data = getCurrentData();
+    if (currentIndex < data.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
-  };
+  }, [currentIndex, getCurrentData]);
 
-  const handleKeyPress = (event: KeyboardEvent) => {
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (reviewMode === 'selection') return;
     
     if (event.key === 'ArrowLeft') {
@@ -546,14 +558,14 @@ export default function ChildPage() {
     } else if (event.key === 'ArrowRight') {
       handleNext();
     }
-  };
+  }, [reviewMode, handlePrevious, handleNext]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, [currentIndex, currentData.length, reviewMode]);
+  }, [handleKeyPress]);
 
   const playLetterSound = (letter: Letter) => {
     if (typeof window !== 'undefined' && (window as typeof window & { letterAudioPlayer?: { playLetter: (letter: string, index?: number) => void } }).letterAudioPlayer) {
@@ -731,11 +743,11 @@ export default function ChildPage() {
           
           <div className="text-center flex-1">
             <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4 font-kid-chinese">
-              🌟 学习时间到啦！🌟
+              🌟 {t.title} 🌟
             </h1>
             {currentProfile && (
               <p className="text-2xl text-gray-700 dark:text-gray-300 font-medium font-kid-chinese">
-                {currentProfile.name} 小朋友，选择你想学习的内容吧
+                {currentProfile.name} {language === 'zh' ? '小朋友，选择你想学习的内容吧' : ', choose what you want to learn!'}
               </p>
             )}
           </div>
@@ -743,7 +755,7 @@ export default function ChildPage() {
           <button
             onClick={() => window.location.href = '/'}
             className="p-4 rounded-2xl bg-white shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300 w-[72px] h-[72px] flex items-center justify-center flex-shrink-0"
-            title="返回首页"
+            title={t.backToHome}
           >
             <HomeIcon className="h-10 w-10 text-green-500" />
           </button>
@@ -762,15 +774,15 @@ export default function ChildPage() {
             <div className="text-center">
               <div className="text-9xl mb-6 animate-bounce">🔤</div>
               <h3 className="text-4xl font-bold text-blue-600 mb-4 font-kid-chinese">
-                字母学习
+                {t.letterReview}
               </h3>
               <p className="text-gray-600 text-xl mb-6 font-medium font-kid-chinese">
-                学习字母的发音
+                {t.letterReviewDesc}
               </p>
               <div className="px-6 py-3 bg-blue-100 rounded-full text-xl font-bold text-blue-700 inline-block">
                 {currentProfile ? 
-                  `${currentProfile.data.letters.filter(l => l.isVisible).length} 个字母` : 
-                  '加载中...'
+                  `${currentProfile.data.letters.filter(l => l.isVisible).length} ${language === 'zh' ? '个字母' : 'letters'}` : 
+                  t.loading
                 }
               </div>
             </div>
@@ -787,15 +799,15 @@ export default function ChildPage() {
             <div className="text-center">
               <div className="text-9xl mb-6 animate-bounce">📚</div>
               <h3 className="text-4xl font-bold text-green-600 mb-4 font-kid-chinese">
-                单词学习
+                {t.wordPractice}
               </h3>
               <p className="text-gray-600 text-xl mb-6 font-medium font-kid-chinese">
-                学习有趣的英语单词
+                {t.wordPracticeDesc}
               </p>
               <div className="px-6 py-3 bg-green-100 rounded-full text-xl font-bold text-green-700 inline-block">
                 {currentProfile ? 
-                  `${currentProfile.data.words.length} 个单词` : 
-                  '加载中...'
+                  `${currentProfile.data.words.length} ${language === 'zh' ? '个单词' : 'words'}` : 
+                  t.loading
                 }
               </div>
             </div>
@@ -812,15 +824,15 @@ export default function ChildPage() {
             <div className="text-center">
               <div className="text-9xl mb-6 animate-bounce">💬</div>
               <h3 className="text-4xl font-bold text-purple-600 mb-4 font-kid-chinese">
-                句子学习
+                {t.sentenceReading}
               </h3>
               <p className="text-gray-600 text-xl mb-6 font-medium font-kid-chinese">
-                练习完整的英语句子
+                {t.sentenceReadingDesc}
               </p>
               <div className="px-6 py-3 bg-purple-100 rounded-full text-xl font-bold text-purple-700 inline-block">
                 {currentProfile ? 
-                  `${currentProfile.data.sentences.length} 个句子` : 
-                  '加载中...'
+                  `${currentProfile.data.sentences.length} ${language === 'zh' ? '个句子' : 'sentences'}` : 
+                  t.loading
                 }
               </div>
             </div>
@@ -837,7 +849,7 @@ export default function ChildPage() {
             <span className="animate-bounce inline-block" style={{animationDelay: '0.8s'}}>🌟</span>
           </div>
           <div className="text-2xl text-gray-600 font-medium font-kid-chinese">
-            选择你最喜欢的学习内容吧🌟
+            {language === 'zh' ? '选择你最喜欢的学习内容吧🌟' : 'Choose your favorite learning content! 🌟'}
           </div>
         </div>
       </div>
@@ -845,23 +857,24 @@ export default function ChildPage() {
   );
 
   const renderReviewMode = () => {
-    if (currentData.length === 0) {
+    const data = getCurrentData();
+    if (data.length === 0) {
       return (
         <div className="h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
           <div className="text-center bg-white rounded-3xl p-16 shadow-2xl border-4 border-orange-200">
             <div className="text-9xl mb-8 animate-bounce">🤔</div>
             <h2 className="text-5xl font-bold text-orange-600 mb-6 font-kid-chinese">
-              哎呀！这里还是空空如也🤔
+              {language === 'zh' ? '哎呀！这里还是空空如也🤔' : 'Oops! Nothing here yet! 🤔'}
             </h2>
             <p className="text-gray-600 text-2xl mb-10 font-medium font-kid-chinese">
-              让爸爸妈妈先添加一些学习内容吧🌟
+              {language === 'zh' ? '让爸爸妈妈先添加一些学习内容吧🌟' : 'Ask your parents to add some learning content first! 🌟'}
             </p>
             <button
               onClick={() => setReviewMode('selection')}
               className="px-12 py-6 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-2xl font-bold rounded-2xl hover:from-blue-600 hover:to-purple-600 transform hover:scale-110 transition-all duration-300 shadow-xl hover:shadow-2xl"
-            >
-              🔙 返回选择
-            </button>
+                          >
+                🔙 {language === 'zh' ? '返回选择' : 'Back to Selection'}
+              </button>
           </div>
         </div>
       );
@@ -874,19 +887,19 @@ export default function ChildPage() {
           <button
             onClick={() => setReviewMode('selection')}
             className="p-3 rounded-2xl bg-white shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
-            title="返回选择"
+            title={language === 'zh' ? '返回选择' : 'Back to Selection'}
           >
             <ArrowLeftIcon className="h-8 w-8 text-blue-500" />
           </button>
           
           <div className="text-center">
             <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 font-kid-chinese">
-              {reviewMode === 'letters' && '🔤 字母学习'}
-              {reviewMode === 'words' && '📚 单词学习'}
-              {reviewMode === 'sentences' && '💬 句子学习'}
+              {reviewMode === 'letters' && `🔤 ${t.letterLearning}`}
+              {reviewMode === 'words' && `📚 ${t.wordLearning}`}
+              {reviewMode === 'sentences' && `💬 ${t.sentenceLearning}`}
             </h2>
             <p className="text-lg text-gray-700 font-medium">
-              {currentIndex + 1} / {currentData.length}
+              {currentIndex + 1} / {data.length}
             </p>
           </div>
 
@@ -898,7 +911,7 @@ export default function ChildPage() {
                   ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg' 
                   : 'bg-white text-gray-700 shadow-lg hover:shadow-xl'
               }`}
-              title={isRandomMode ? '关闭随机模式' : '开启随机模式'}
+              title={isRandomMode ? (language === 'zh' ? '关闭随机模式' : 'Turn off random mode') : (language === 'zh' ? '开启随机模式' : 'Turn on random mode')}
             >
               <ArrowsRightLeftIcon className="h-4 w-4" />
               {isRandomMode ? '🎲' : '📋'}
@@ -907,7 +920,7 @@ export default function ChildPage() {
             <button
               onClick={() => window.location.href = '/'}
               className="p-3 rounded-2xl bg-white shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
-              title="返回首页"
+              title={t.backToHome}
             >
               <HomeIcon className="h-8 w-8 text-green-500" />
             </button>
@@ -974,10 +987,7 @@ export default function ChildPage() {
                         )}
                       </div>
                       
-                      {/* 鼓励文字 */}
-                      <div className="text-xl text-gray-600 font-medium font-kid-chinese">
-                        点击字母听发音！ 🎵
-                      </div>
+
                     </div>
                   </div>
                 )}
@@ -1022,9 +1032,11 @@ export default function ChildPage() {
                         if (imageUrl) {
                           return (
                             <div className="w-full h-96 rounded-3xl shadow-2xl overflow-hidden border-4 border-green-200">
-                              <img
+                              <Image
                                 src={imageUrl}
                                 alt={word.toUpperCase()}
+                                width={500}
+                                height={400}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
@@ -1073,10 +1085,7 @@ export default function ChildPage() {
                         <SpeakerWaveIcon className="h-12 w-12 text-green-600" />
                       </button>
                       
-                      {/* 鼓励文字 */}
-                      <div className="text-xl text-gray-600 font-medium font-kid-chinese text-center">
-                        点击喇叭听发音！ 🔊
-                      </div>
+
                       
                       {/* 星级评分 */}
                       <div className="flex justify-center gap-2">
@@ -1085,7 +1094,7 @@ export default function ChildPage() {
                             key={n}
                             className={`h-10 w-10 cursor-pointer transition-all duration-300 transform hover:scale-125 ${n <= ((currentItem as Word).star || 0) ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-300 hover:text-yellow-200'}`}
                             onClick={() => updateWordStar((currentItem as Word).id, n)}
-                            title={`重要程度 ${n}星`}
+                            title={`熟练程度 ${n}星`}
                           />
                         ))}
                       </div>
@@ -1133,9 +1142,11 @@ export default function ChildPage() {
                         if (imageUrl) {
                           return (
                             <div className="w-full h-96 rounded-3xl shadow-2xl overflow-hidden border-4 border-purple-200">
-                              <img
+                              <Image
                                 src={imageUrl}
                                 alt="句子配图"
+                                width={500}
+                                height={400}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement;
@@ -1184,10 +1195,7 @@ export default function ChildPage() {
                         <SpeakerWaveIcon className="h-12 w-12 text-purple-600" />
                       </button>
                       
-                      {/* 鼓励文字 */}
-                      <div className="text-xl text-gray-600 font-medium font-kid-chinese text-center">
-                        点击喇叭听句子！ 🔊
-                      </div>
+
                       
                       {/* 星级评分 */}
                       <div className="flex justify-center gap-2">
@@ -1196,7 +1204,7 @@ export default function ChildPage() {
                             key={n}
                             className={`h-10 w-10 cursor-pointer transition-all duration-300 transform hover:scale-125 ${n <= ((currentItem as Sentence).star || 0) ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-300 hover:text-yellow-200'}`}
                             onClick={() => updateSentenceStar((currentItem as Sentence).id, n)}
-                            title={`重要程度 ${n}星`}
+                            title={`熟练程度 ${n}星`}
                           />
                         ))}
                       </div>
@@ -1209,7 +1217,7 @@ export default function ChildPage() {
             {/* 右侧导航按钮 */}
             <button
               onClick={handleNext}
-              disabled={currentIndex === currentData.length - 1}
+              disabled={currentIndex === data.length - 1}
               className="p-6 rounded-full bg-white shadow-2xl hover:shadow-3xl disabled:opacity-30 disabled:cursor-not-allowed transform hover:scale-110 transition-all duration-300"
             >
               <ArrowRightIcon className="h-16 w-16 text-blue-500" />
@@ -1221,7 +1229,7 @@ export default function ChildPage() {
         <div className="p-4 bg-white/80 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-center space-x-3">
-              {currentData.map((_, index) => (
+              {data.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}

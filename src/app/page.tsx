@@ -11,6 +11,7 @@ import {
   setCurrentProfileId,
   importProfile,
   getProfile,
+  ensureDefaultProfile,
 } from '../lib/profileManager';
 import { PlusIcon, TrashIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, UserGroupIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 import dayjs from 'dayjs';
@@ -21,15 +22,30 @@ export default function Home() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh'); // 默认中文
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // 加载语言偏好
+    const savedLanguage = localStorage.getItem('austin-english-language') as 'zh' | 'en' | null;
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+    
     loadProfiles();
   }, []);
 
+  const handleLanguageChange = (newLanguage: 'zh' | 'en') => {
+    setLanguage(newLanguage);
+    localStorage.setItem('austin-english-language', newLanguage);
+  };
+
   const loadProfiles = () => {
     setIsLoading(true);
+    
+    // 确保有默认档案
+    ensureDefaultProfile();
     
     const profileList = getProfileSummaries();
     setProfiles(profileList);
@@ -75,7 +91,7 @@ export default function Home() {
   };
 
   const handleDeleteProfile = (profileId: string) => {
-    if (confirm('确定要删除这个档案吗？此操作无法撤销。')) {
+    if (confirm(t.deleteConfirm)) {
       deleteProfile(profileId);
       setProfiles(profiles.filter(p => p.id !== profileId));
       if (selectedProfile === profileId) {
@@ -185,46 +201,185 @@ export default function Home() {
 
   const canProceed = selectedProfile !== '';
 
+  // 语言文本配置
+  const texts = {
+    zh: {
+      title: 'Austin English',
+      subtitle: '个性化英语复习工具', 
+      description: '配合孩子的英语课程，家长自建专属复习内容库',
+      profilesTitle: '学习档案',
+      profilesDesc: '选择或创建学习档案，开始个性化学习之旅',
+      exportAll: '导出全部',
+      import: '导入',
+      newProfile: '新建档案',
+      createProfile: '创建',
+      cancel: '取消',
+      loading: '正在加载档案...',
+      noProfiles: '还没有档案',
+      createFirst: '请创建一个新档案开始学习',
+      letters: '字母',
+      words: '单词',
+      sentences: '句子',
+      created: '创建',
+      modified: '修改',
+      deleteConfirm: '确定要删除这个档案吗？此操作无法撤销。',
+      parentEntry: '家长入口',
+      parentDesc: '管理学习内容，设置学习进度，查看学习记录',
+      childEntry: '孩子入口',
+      childDesc: '开始有趣的学习之旅，探索英语的奥秘',
+      selectProfile: '请先选择一个档案',
+      startManage: '开始管理',
+      startLearning: '开始学习',
+      inputProfileName: '输入档案名称',
+      deleteProfile: '删除档案'
+    },
+    en: {
+      title: 'Austin English',
+      subtitle: 'Personalized English Review Tool',
+      description: 'Complement your child\'s English courses, parents build custom review content',
+      profilesTitle: 'Learning Profiles',
+      profilesDesc: 'Select or create a learning profile to start your personalized learning journey',
+      exportAll: 'Export All',
+      import: 'Import',
+      newProfile: 'New Profile',
+      createProfile: 'Create',
+      cancel: 'Cancel',
+      loading: 'Loading profiles...',
+      noProfiles: 'No profiles yet',
+      createFirst: 'Please create a new profile to start learning',
+      letters: 'Letters',
+      words: 'Words',
+      sentences: 'Sentences',
+      created: 'Created',
+      modified: 'Modified',
+      deleteConfirm: 'Are you sure you want to delete this profile? This action cannot be undone.',
+      parentEntry: 'Parent Portal',
+      parentDesc: 'Manage learning content, set learning progress, view learning records',
+      childEntry: 'Child Portal',
+      childDesc: 'Start an exciting learning journey and explore the mysteries of English',
+      selectProfile: 'Please select a profile first',
+      startManage: 'Start Managing',
+      startLearning: 'Start Learning',
+      inputProfileName: 'Enter profile name',
+      deleteProfile: 'Delete profile'
+    }
+  };
+
+  const t = texts[language];
+
   return (
     <main className="h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex flex-col overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative flex-shrink-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6">
-          <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Austin English
-              </span>
-            </h1>
-            <div className="mt-2 mb-1">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 border border-blue-200">
-                updated 2025/6/14
-              </span>
+      {/* Hero Section - Jony Ive Inspired Design */}
+      <section className="relative flex-shrink-0 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header Navigation */}
+          <div className="flex items-center justify-between py-6">
+            {/* Austin English Brand */}
+            <div className="flex items-center">
+              <h1 className="text-2xl font-light tracking-wide text-gray-900">
+                {t.title}
+              </h1>
+              <div className="ml-3 px-2 py-1 bg-gray-100 rounded-full">
+                <span className="text-xs font-medium text-gray-600">
+                  2025.6.14
+                </span>
+              </div>
             </div>
-            <p className="mt-3 text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              为孩子打造的智能英语学习平台
-            </p>
-            <p className="mt-2 text-base text-gray-500 max-w-2xl mx-auto">
-              个性化学习体验，让英语学习变得简单而有趣
-            </p>
+
+            {/* Language Selector */}
+            <div className="flex bg-gray-100 rounded-full p-1">
+              <button
+                onClick={() => handleLanguageChange('zh')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  language === 'zh'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                中文
+              </button>
+              <button
+                onClick={() => handleLanguageChange('en')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  language === 'en'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                English
+              </button>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="pt-4 pb-4">
+            <div className="text-center max-w-4xl mx-auto">
+              {/* Primary Headline */}
+              <h2 className="text-3xl sm:text-4xl font-light text-gray-900 tracking-tight leading-tight">
+                {t.subtitle}
+              </h2>
+              
+              {/* Subtitle */}
+              <p className="mt-3 text-base font-light text-gray-600 leading-relaxed">
+                {t.description}
+              </p>
+
+              {/* Feature Points - Apple Style - Ultra Compact */}
+              <div className="mt-6 grid grid-cols-3 gap-6 max-w-3xl mx-auto">
+                <div className="text-center">
+                  <div className="w-8 h-8 mx-auto mb-2 bg-blue-100 rounded-full flex items-center justify-center">
+                    <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-900 mb-1">
+                    {language === 'zh' ? '配合任何课程' : 'Works with Any Course'}
+                  </h3>
+                  <p className="text-xs text-gray-600 font-light">
+                    {language === 'zh' ? '支持任何英语课程' : 'Supports any English course'}
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <div className="w-8 h-8 mx-auto mb-2 bg-purple-100 rounded-full flex items-center justify-center">
+                    <div className="w-4 h-4 bg-purple-500 rounded-full"></div>
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-900 mb-1">
+                    {language === 'zh' ? '家长自建内容' : 'Parent-Built Content'}
+                  </h3>
+                  <p className="text-xs text-gray-600 font-light">
+                    {language === 'zh' ? '根据课程进度添加单词和句子' : 'Add words and sentences based on course progress'}
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <div className="w-8 h-8 mx-auto mb-2 bg-pink-100 rounded-full flex items-center justify-center">
+                    <div className="w-4 h-4 bg-pink-500 rounded-full"></div>
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-900 mb-1">
+                    {language === 'zh' ? '专属复习体验' : 'Personalized Review Experience'}
+                  </h3>
+                  <p className="text-xs text-gray-600 font-light">
+                    {language === 'zh' ? '告别千篇一律的学习内容' : 'Say goodbye to one-size-fits-all learning content'}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Profile Management Section */}
-      <section className="flex-1 px-4 sm:px-6 lg:px-8" style={{paddingTop: '50px'}}>
+      <section className="flex-1 px-4 sm:px-6 lg:px-8" style={{paddingTop: '20px'}}>
         <div className="max-w-6xl mx-auto w-full">
           {/* 档案区外部容器 - 固定高度 */}
-          <div className="h-80 bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20" style={{marginBottom: '50px'}}>
+          <div className="h-80 bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20" style={{marginBottom: '20px'}}>
             <div className="w-full h-full p-6 flex flex-col">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                    学习档案
+                    {t.profilesTitle}
                   </h2>
                   <p className="text-gray-600 text-sm">
-                    选择或创建学习档案，开始个性化学习之旅
+                    {t.profilesDesc}
                   </p>
                 </div>
                 
@@ -232,26 +387,26 @@ export default function Home() {
                   <button
                     onClick={handleExportAllProfiles}
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all duration-200 hover:scale-105"
-                    title="导出所有档案"
+                    title={t.exportAll}
                     disabled={profiles.length === 0}
                   >
                     <ArrowDownTrayIcon className="h-5 w-5" />
-                    导出全部
+                    {t.exportAll}
                   </button>
                   <button
                     onClick={handleImportProfile}
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-xl font-medium transition-all duration-200 hover:scale-105"
-                    title="导入档案"
+                    title={t.import}
                   >
                     <ArrowUpTrayIcon className="h-5 w-5" />
-                    导入
+                    {t.import}
                   </button>
                   <button
                     onClick={() => setShowCreateForm(true)}
                     className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-xl font-medium transition-all duration-200 hover:scale-105 shadow-lg"
                   >
                     <PlusIcon className="h-5 w-5" />
-                    新建档案
+                    {t.newProfile}
                   </button>
                 </div>
               </div>
@@ -265,7 +420,7 @@ export default function Home() {
                       value={newProfileName}
                       onChange={(e) => setNewProfileName(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleCreateProfile()}
-                      placeholder="输入档案名称"
+                      placeholder={t.inputProfileName}
                       className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
                       autoFocus
                     />
@@ -274,7 +429,7 @@ export default function Home() {
                         onClick={handleCreateProfile}
                         className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-medium transition-all duration-200 hover:scale-105"
                       >
-                        创建
+                        {t.createProfile}
                       </button>
                       <button
                         onClick={() => {
@@ -283,7 +438,7 @@ export default function Home() {
                         }}
                         className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-all duration-200"
                       >
-                        取消
+                        {t.cancel}
                       </button>
                     </div>
                   </div>
@@ -295,15 +450,15 @@ export default function Home() {
                 {isLoading ? (
                   <div className="text-center py-4">
                     <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mb-3"></div>
-                    <p className="text-gray-500">正在加载档案...</p>
+                    <p className="text-gray-500">{t.loading}</p>
                   </div>
                 ) : profiles.length === 0 ? (
                   <div className="text-center py-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                       <AcademicCapIcon className="h-6 w-6 text-blue-500" />
                     </div>
-                    <p className="text-gray-500 mb-1">还没有档案</p>
-                    <p className="text-gray-400 text-sm">请创建一个新档案开始学习</p>
+                    <p className="text-gray-500 mb-1">{t.noProfiles}</p>
+                    <p className="text-gray-400 text-sm">{t.createFirst}</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -318,11 +473,22 @@ export default function Home() {
                       onClick={() => handleSelectProfile(profile.id)}
                     >
                       <div className="flex justify-between items-start mb-3">
-                        <h3 className={`font-bold text-base ${
-                          selectedProfile === profile.id ? 'text-white' : 'text-gray-900'
-                        }`}>
-                          {profile.name}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className={`font-bold text-base ${
+                            selectedProfile === profile.id ? 'text-white' : 'text-gray-900'
+                          }`}>
+                            {profile.name}
+                          </h3>
+                          {profile.id === 'profile_default_austin' && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              selectedProfile === profile.id 
+                                ? 'bg-white/20 text-white' 
+                                : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              {language === 'zh' ? '示例档案' : 'Sample'}
+                            </span>
+                          )}
+                        </div>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -333,7 +499,7 @@ export default function Home() {
                               ? 'hover:bg-white/20 text-white/80 hover:text-white'
                               : 'hover:bg-red-50 text-gray-400 hover:text-red-500'
                           }`}
-                          title="删除档案"
+                          title={t.deleteProfile}
                         >
                           <TrashIcon className="h-4 w-4" />
                         </button>
@@ -343,22 +509,22 @@ export default function Home() {
                         selectedProfile === profile.id ? 'text-white/90' : 'text-gray-600'
                       }`}>
                         <div className="flex justify-between text-sm">
-                          <span>字母</span>
+                          <span>{t.letters}</span>
                           <span className="font-medium">{profile.letterCount}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span>单词</span>
+                          <span>{t.words}</span>
                           <span className="font-medium">{profile.wordCount}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span>句子</span>
+                          <span>{t.sentences}</span>
                           <span className="font-medium">{profile.sentenceCount}</span>
                         </div>
                         <div className={`pt-2 border-t text-xs ${
                           selectedProfile === profile.id ? 'border-white/20' : 'border-gray-200'
                         }`}>
-                          <div>创建: {dayjs(profile.createdAt).format('YYYY/MM/DD')}</div>
-                          <div>修改: {dayjs(profile.lastModified).format('MM/DD HH:mm')}</div>
+                          <div>{t.created}: {dayjs(profile.createdAt).format('YYYY/MM/DD')}</div>
+                          <div>{t.modified}: {dayjs(profile.lastModified).format('MM/DD HH:mm')}</div>
                         </div>
                       </div>
                       
@@ -393,19 +559,19 @@ export default function Home() {
                     <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                       <UserGroupIcon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-2xl font-bold mb-3">家长入口</h3>
+                    <h3 className="text-2xl font-bold mb-3">{t.parentEntry}</h3>
                     <p className="text-blue-100 text-sm leading-relaxed mb-4">
-                      管理学习内容，设置学习进度，查看学习记录
+                      {t.parentDesc}
                     </p>
                     {!canProceed && (
                       <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-200 rounded-lg text-sm">
                         <span className="w-2 h-2 bg-red-400 rounded-full"></span>
-                        请先选择一个档案
+                        {t.selectProfile}
                       </div>
                     )}
                     {canProceed && (
                       <div className="inline-flex items-center gap-2 text-blue-100 group-hover:text-white transition-colors">
-                        <span>开始管理</span>
+                        <span>{t.startManage}</span>
                         <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
@@ -430,19 +596,19 @@ export default function Home() {
                     <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                       <AcademicCapIcon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-2xl font-bold mb-3">孩子入口</h3>
+                    <h3 className="text-2xl font-bold mb-3">{t.childEntry}</h3>
                     <p className="text-purple-100 text-sm leading-relaxed mb-4">
-                      开始有趣的学习之旅，探索英语的奥秘
+                      {t.childDesc}
                     </p>
                     {!canProceed && (
                       <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-200 rounded-lg text-sm">
                         <span className="w-2 h-2 bg-red-400 rounded-full"></span>
-                        请先选择一个档案
+                        {t.selectProfile}
                       </div>
                     )}
                     {canProceed && (
                       <div className="inline-flex items-center gap-2 text-purple-100 group-hover:text-white transition-colors">
-                        <span>开始学习</span>
+                        <span>{t.startLearning}</span>
                         <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>

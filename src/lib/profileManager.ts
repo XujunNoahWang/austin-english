@@ -137,6 +137,123 @@ export function createProfile(name: string): Profile {
   return profile;
 }
 
+// 创建默认演示档案
+export function createDefaultProfile(): Profile {
+  const now = new Date().toISOString();
+  
+  // 初始化字母数据
+  const letterPronunciations: Record<string, string[]> = {
+    'A': ['/æ/', '/eɪ/', '/ɑː/'],
+    'B': ['/b/'],
+    'C': ['/k/', '/s/'],
+    'D': ['/d/'],
+    'E': ['/e/', '/iː/'],
+    'F': ['/f/'],
+    'G': ['/g/', '/dʒ/'],
+    'H': ['/h/'],
+    'I': ['/aɪ/', '/i/'],
+    'J': ['/dʒ/'],
+    'K': ['/k/'],
+    'L': ['/l/'],
+    'M': ['/m/'],
+    'N': ['/n/'],
+    'O': ['/ɒ/', '/oʊ/'],
+    'P': ['/p/'],
+    'Q': ['/k/'],
+    'R': ['/r/'],
+    'S': ['/s/'],
+    'T': ['/t/'],
+    'U': ['/ʌ/', '/juː/'],
+    'V': ['/v/'],
+    'W': ['/w/'],
+    'X': ['/ks/'],
+    'Y': ['/j/'],
+    'Z': ['/z/']
+  };
+
+  // 创建字母数据，前10个字母设为可见
+  const initialLetters = Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map((char, index) => ({
+    id: char,
+    uppercase: char,
+    lowercase: char.toLowerCase(),
+    pronunciations: letterPronunciations[char] || [],
+    isVisible: index < 10, // 前10个字母默认可见 (A-J)
+  }));
+
+  // 设置选中的音标发音
+  const selectedPronunciations: Record<string, string[]> = {
+    'A': ['/æ/'],
+    'B': ['/b/'],
+    'C': ['/k/'],
+    'D': ['/d/'],
+    'E': ['/e/'],
+    'F': ['/f/'],
+    'G': ['/g/'],
+    'H': ['/h/'],
+    'I': ['/aɪ/'],
+    'J': ['/dʒ/'],
+  };
+
+  // 默认单词数据
+  const defaultWords = [
+    { id: 'word_1', text: 'apple', star: 3, createdAt: now },
+    { id: 'word_2', text: 'banana', star: 4, createdAt: now },
+    { id: 'word_3', text: 'cat', star: 5, createdAt: now },
+    { id: 'word_4', text: 'dog', star: 2, createdAt: now },
+    { id: 'word_5', text: 'elephant', star: 1, createdAt: now },
+    { id: 'word_6', text: 'fish', star: 4, createdAt: now },
+    { id: 'word_7', text: 'good', star: 5, createdAt: now },
+    { id: 'word_8', text: 'hello', star: 5, createdAt: now },
+    { id: 'word_9', text: 'ice', star: 3, createdAt: now },
+    { id: 'word_10', text: 'jump', star: 2, createdAt: now },
+  ];
+
+  // 默认句子数据
+  const defaultSentences = [
+    { id: 'sentence_1', text: 'Hello, how are you?', star: 4, createdAt: now },
+    { id: 'sentence_2', text: 'I like apples.', star: 5, createdAt: now },
+    { id: 'sentence_3', text: 'The cat is cute.', star: 3, createdAt: now },
+    { id: 'sentence_4', text: 'Good morning!', star: 5, createdAt: now },
+    { id: 'sentence_5', text: 'Can you help me?', star: 2, createdAt: now },
+    { id: 'sentence_6', text: 'I have a dog.', star: 4, createdAt: now },
+    { id: 'sentence_7', text: 'The fish is swimming.', star: 1, createdAt: now },
+    { id: 'sentence_8', text: 'Thank you very much.', star: 3, createdAt: now },
+  ];
+
+  const profile: Profile = {
+    id: 'profile_default_austin',
+    name: 'Austin',
+    createdAt: now,
+    lastModified: now,
+    data: {
+      letters: initialLetters,
+      words: defaultWords,
+      sentences: defaultSentences,
+      selectedPronunciations: selectedPronunciations,
+    },
+  };
+
+  return profile;
+}
+
+// 确保有默认档案
+export function ensureDefaultProfile(): Profile {
+  const profiles = getProfileSummaries();
+  
+  // 如果已经有档案了，返回第一个
+  if (profiles.length > 0) {
+    const firstProfile = getProfile(profiles[0].id);
+    if (firstProfile) return firstProfile;
+  }
+  
+  // 如果没有档案，创建默认档案
+  const defaultProfile = createDefaultProfile();
+  saveProfile(defaultProfile);
+  setCurrentProfileId(defaultProfile.id);
+  
+  return defaultProfile;
+}
+
 // 删除档案
 export function deleteProfile(profileId: string): boolean {
   if (typeof window === 'undefined') return false;

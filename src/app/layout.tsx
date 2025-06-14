@@ -19,7 +19,7 @@ export default function RootLayout({
       <head>
         <script src="/js/letter-audio-player.js" async></script>
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className} suppressHydrationWarning={true}>{children}</body>
     </html>
   )
 } 

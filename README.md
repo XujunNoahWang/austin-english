@@ -1,176 +1,249 @@
-# Austin English Learning App
+# Austin English | 个性化英语复习工具
 
-一个为孩子打造的智能英语学习平台，提供个性化学习体验。
+[English](#english) | [中文](#中文)
 
-## 🌟 功能特色
+---
 
-### 👨‍👩‍👧‍👦 家长控制面板
-- **档案管理系统**：创建、管理多个学习档案
-- **字母学习配置**：选择字母和音标发音
-- **单词管理**：添加、编辑、排序单词列表
-- **句子管理**：管理学习句子，支持星级评价
-- **数据导入导出**：备份和恢复学习数据
+## 中文
 
-### 👶 儿童学习界面
-- **字母学习**：大字体显示，音频发音支持
-- **单词复习**：配图学习，图片自动缓存
-- **句子练习**：完整句子学习，智能图片匹配
-- **随机模式**：打乱学习顺序，增加趣味性
-- **进度追踪**：实时显示学习进度
+### 📚 这是什么？
 
-### 🎵 音频系统
-- 支持26个字母的标准发音
-- 多种音标发音选择
-- 本地音频文件播放
-- 语音合成备用方案
+**Austin English** 是一个与众不同的个性化英语复习工具。与传统的英语学习应用不同，这里**没有预设的学习内容**，而是完全由家长根据孩子正在学习的英语课程来自建复习内容库。
 
-### 🖼️ 智能图片系统
-- Unsplash API集成
-- 永久本地缓存
-- 单词-图片智能匹配
-- 句子关键词提取
+### 🎯 为什么与众不同？
 
-## 🚀 技术栈
+| 传统英语学习应用 | Austin English |
+|-----------------|----------------|
+| ❌ 提供现成的学习内容 | ✅ 家长自建学习内容 |
+| ❌ 千篇一律的内容 | ✅ 专属定制的复习库 |
+| ❌ 无法配合现有课程 | ✅ 完美配合任何英语课程 |
+| ❌ 一刀切的学习进度 | ✅ 跟随孩子的实际学习进度 |
 
-- **框架**：Next.js 15.3.3
-- **语言**：TypeScript
-- **样式**：Tailwind CSS
-- **图标**：Heroicons
-- **日期处理**：Day.js
-- **数据存储**：LocalStorage
-- **图片API**：Unsplash
+### 🌟 核心特色
 
-## 📦 安装和运行
+#### 🏗️ **配合任何课程**
+- 支持雪梨老师、剑桥英语、新概念等任何英语课程
+- 家长根据课程进度添加单词和句子
+- 完全同步孩子的学习内容
 
-### 环境要求
-- Node.js 18+ 
-- npm 或 yarn
+#### 👨‍👩‍👧‍👦 **家长自建内容**
+- 零预设内容，完全由家长定制
+- 根据课程进度添加单词和句子
+- 灵活的内容管理系统
 
-### 安装依赖
+#### 🎨 **专属复习体验**
+- 告别千篇一律的学习内容
+- 每个孩子都有独特的复习库
+- 针对性强，效果显著
+
+### 📱 功能模块
+
+#### 👨‍👩‍👧‍👦 家长管理中心
+- **档案管理**：为不同孩子创建独立档案
+- **字母配置**：选择要学习的字母和音标
+- **单词管理**：添加课程中的重要单词
+- **句子管理**：输入课程中的关键句子
+- **数据同步**：支持导入导出，多设备使用
+
+#### 👶 孩子学习界面
+- **字母复习**：大字体显示，标准发音
+- **单词练习**：配图学习，智能图片匹配
+- **句子阅读**：完整句子练习，语音播放
+- **随机模式**：打乱顺序，增加趣味性
+- **进度跟踪**：实时显示学习进度
+
+### 🚀 技术特性
+
+- **🎵 智能音频系统**：26个字母标准发音 + 语音合成
+- **🖼️ 自动配图系统**：Unsplash API + 永久本地缓存
+- **💾 数据管理**：LocalStorage + 导入导出功能
+- **📱 响应式设计**：支持手机、平板、电脑
+
+### 🛠️ 快速开始
+
 ```bash
+# 克隆项目
+git clone https://github.com/your-username/austin-english.git
+
+# 安装依赖
 npm install
-```
 
-### 开发模式
-```bash
+# 启动开发服务器
 npm run dev
+
+# 访问 http://localhost:3000
 ```
 
-访问 [http://localhost:3000](http://localhost:3000) 查看应用。
-
-### 生产构建
-```bash
-npm run build
-npm start
-```
-
-## 📁 项目结构
+### 📁 项目结构
 
 ```
 src/
-├── app/                    # Next.js App Router
+├── app/
 │   ├── page.tsx           # 首页 - 档案选择
-│   ├── parent/            # 家长控制面板
-│   └── child/             # 儿童学习界面
-├── lib/                   # 工具库
-│   ├── profileManager.ts  # 档案管理
-│   └── fileStorage.ts     # 文件存储
-├── types/                 # TypeScript类型定义
-│   ├── index.ts          # 基础类型
-│   └── profile.ts        # 档案相关类型
-public/
-├── audio/                 # 音频文件
-│   └── letters/          # 字母发音文件
-└── js/                   # 客户端脚本
-    └── letter-audio-player.js
+│   ├── parent/           # 家长管理中心
+│   └── child/            # 孩子学习界面
+├── lib/
+│   ├── profileManager.ts # 档案管理
+│   └── i18n.ts          # 国际化支持
+└── types/               # TypeScript类型定义
 ```
 
-## 🎯 使用指南
+### ⚠️ Unsplash API 配置
 
-### 首次使用
-1. 访问首页创建学习档案
-2. 进入家长控制面板配置学习内容
-3. 选择要学习的字母和音标
-4. 添加单词和句子
-5. 切换到儿童界面开始学习
+项目使用Unsplash API提供图片，当前使用作者的个人密钥（每小时50次请求限制）。
 
-### 数据管理
-- **导出**：在首页点击"导出所有档案"备份数据
-- **导入**：点击"导入档案"恢复数据
-- **多档案**：支持创建多个学习档案
+如需更高频率使用，请：
+1. 访问 [Unsplash Developers](https://unsplash.com/developers) 申请API密钥
+2. 在 `src/app/child/page.tsx` 中替换 `UNSPLASH_ACCESS_KEY`
 
-### 音频配置
-音频文件放置在 `public/audio/letters/` 目录下：
+### 🎯 使用场景示例
+
+**场景1：配合雪梨老师课程**
+- 孩子学习雪梨老师的英语课程
+- 家长在Austin English中添加课程中的单词和句子
+- 孩子使用应用进行针对性复习
+
+**场景2：配合学校教材**
+- 孩子在学校学习剑桥英语教材
+- 家长根据每单元内容建立复习库
+- 在家进行巩固练习
+
+### 📝 更新日志
+
+**v1.0 (2025.6.14)**
+- ✅ 核心功能完成
+- ✅ 中英文界面支持
+- ✅ 音频播放系统
+- ✅ 图片缓存机制
+- ✅ 数据导入导出
+
+---
+
+## English
+
+### 📚 What is this?
+
+**Austin English** is a unique personalized English review tool. Unlike traditional English learning apps, it provides **no pre-made content**. Instead, parents build a custom review content library based on their child's actual English courses.
+
+### 🎯 Why is it different?
+
+| Traditional English Apps | Austin English |
+|--------------------------|----------------|
+| ❌ Pre-made learning content | ✅ Parent-built custom content |
+| ❌ One-size-fits-all content | ✅ Personalized review library |
+| ❌ Cannot sync with existing courses | ✅ Works perfectly with any English course |
+| ❌ Fixed learning progress | ✅ Follows child's actual learning pace |
+
+### 🌟 Core Features
+
+#### 🏗️ **Works with Any Course**
+- Supports any English course (Shirley's lessons, Cambridge English, New Concept English, etc.)
+- Parents add words and sentences based on course progress
+- Perfectly synchronized with child's learning content
+
+#### 👨‍👩‍👧‍👦 **Parent-Built Content**
+- Zero pre-made content, fully customized by parents
+- Add words and sentences based on course progress
+- Flexible content management system
+
+#### 🎨 **Personalized Review Experience**
+- Say goodbye to one-size-fits-all learning content
+- Each child has a unique review library
+- Highly targeted and effective
+
+### 📱 Functional Modules
+
+#### 👨‍👩‍👧‍👦 Parent Management Center
+- **Profile Management**: Create separate profiles for different children
+- **Letter Configuration**: Select letters and phonetics to learn
+- **Word Management**: Add important words from courses
+- **Sentence Management**: Input key sentences from courses
+- **Data Sync**: Import/export support for multi-device usage
+
+#### 👶 Child Learning Interface
+- **Letter Review**: Large font display with standard pronunciation
+- **Word Practice**: Picture-based learning with smart image matching
+- **Sentence Reading**: Complete sentence practice with audio playback
+- **Random Mode**: Shuffle order for added fun
+- **Progress Tracking**: Real-time learning progress display
+
+### 🚀 Technical Features
+
+- **🎵 Smart Audio System**: 26-letter standard pronunciation + speech synthesis
+- **🖼️ Auto Image System**: Unsplash API + permanent local caching
+- **💾 Data Management**: LocalStorage + import/export functionality
+- **📱 Responsive Design**: Support for mobile, tablet, and desktop
+
+### 🛠️ Quick Start
+
+```bash
+# Clone the project
+git clone https://github.com/your-username/austin-english.git
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Visit http://localhost:3000
 ```
-public/audio/letters/
-├── a/
-│   ├── a.mp3          # 字母名称发音
-│   └── ae.mp3         # /æ/ 音标发音
-├── b/
-│   └── b.mp3
-└── ...
+
+### 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx           # Home - Profile selection
+│   ├── parent/           # Parent management center
+│   └── child/            # Child learning interface
+├── lib/
+│   ├── profileManager.ts # Profile management
+│   └── i18n.ts          # Internationalization support
+└── types/               # TypeScript type definitions
 ```
 
-## 🔧 配置说明
+### ⚠️ Unsplash API Configuration
 
-### Unsplash API 重要说明 ⚠️
+The project uses Unsplash API for images, currently using the author's personal key (50 requests per hour limit).
 
-**当前限制**：项目使用的是作者的个人Unsplash API密钥，每小时限制50次请求。
+For higher frequency usage:
+1. Visit [Unsplash Developers](https://unsplash.com/developers) to apply for an API key
+2. Replace `UNSPLASH_ACCESS_KEY` in `src/app/child/page.tsx`
 
-**如果遇到图片加载失败**，说明API配额已用完，建议：
+### 🎯 Usage Scenarios
 
-1. **申请自己的API密钥**：
-   - 访问 [Unsplash Developers](https://unsplash.com/developers)
-   - 注册账号并创建新应用
-   - 获取Access Key（免费账号每小时50次请求）
+**Scenario 1: Complementing Shirley's English Course**
+- Child studies Shirley's English course
+- Parents add words and sentences from the course to Austin English
+- Child uses the app for targeted review
 
-2. **替换API密钥**：
-   ```typescript
-   // 文件位置：src/app/child/page.tsx
-   // 找到第12行左右，替换为你的密钥
-   const UNSPLASH_ACCESS_KEY = 'your-new-api-key-here';
-   ```
+**Scenario 2: Complementing School Textbooks**
+- Child studies Cambridge English textbooks at school
+- Parents build review library based on each unit's content
+- Practice at home for reinforcement
 
-3. **重新部署**：
-   - 如果是本地运行：重启开发服务器
-   - 如果是Vercel部署：推送代码到GitHub自动重新部署
+### 📝 Changelog
 
-### 音频映射
-字母音频映射配置在：
-```javascript
-// public/js/letter-audio-player.js
-const letterAudioMap = {
-  'a': ['a.mp3', 'ae.mp3'],
-  // ...
-};
-```
+**v1.0 (2025.6.14)**
+- ✅ Core functionality completed
+- ✅ Chinese and English interface support
+- ✅ Audio playback system
+- ✅ Image caching mechanism
+- ✅ Data import/export
 
-## 📱 响应式设计
+---
 
-- **桌面端**：完整功能体验
-- **平板端**：优化的触控界面
-- **手机端**：简化的移动体验
+## 🤝 Contributing
 
-## 🎨 设计特色
+Welcome to submit Issues and Pull Requests to improve this project.
 
-- **现代化UI**：Apple风格的简洁设计
-- **渐变背景**：美观的视觉效果
-- **大字体显示**：适合儿童阅读
-- **动画效果**：增强交互体验
-- **中文字体**：专门的儿童友好字体
-
-## 📄 版本信息
-
-当前版本：MVP 1.0 (updated 2025/6/14)
-
-## 🤝 贡献
-
-欢迎提交Issue和Pull Request来改进这个项目。
-
-## 📝 许可证
+## 📄 License
 
 MIT License
 
 ---
 
-**Austin English Learning App** - 让英语学习变得简单而有趣！ 🌟 
+**Austin English** - Making English review personalized and effective! �� 
+
+让英语复习个性化且高效！🌟 
