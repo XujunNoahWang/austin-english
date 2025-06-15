@@ -1,5 +1,5 @@
 /**
- * 字母音频播放�?
+ * 字母音频播放�?
  * 支持26个字母的多种发音
  */
 class LetterAudioPlayer {
@@ -17,17 +17,18 @@ class LetterAudioPlayer {
             'f': ['f.mp3', 'f_sound.mp3'],  // 字母名称 F, 音素 /f/
             'g': ['g.mp3', 'g_hard.mp3', 'g_soft.mp3'],  // 字母名称 G, 音素 /g/, 音素 /dʒ/
             'h': ['h.mp3', 'h_sound.mp3'],  // 字母名称 H, 音素 /h/
-            'i': ['i.mp3', 'i_short.mp3', 'i_long.mp3'],  // 字母名称 I, 音素 /ɪ/, 音素 /aɪ/ (i_long.mp3不存�?
-            'j': ['j.MP3', 'dj.MP3']  // 字母名称 J, 音素 /dʒ/
+            'i': ['i.mp3', 'i_short.mp3', 'i_long.mp3'],  // 字母名称 I, 音素 /ɪ/, 音素 /aɪ/ (i_long.mp3不存�?
+            'j': ['j.MP3', 'dj.MP3'],  // 字母名称 J, 音素 /dʒ/
+            'k': ['k.mp3', 'k_sound.mp3']  // 字母名称 K, 音素 /k/
         };
         
 
     }
     
     /**
-     * 播放字母的发�?
+     * 播放字母的发�?
      * @param {string} letter - 字母 (a-z)
-     * @param {number} pronunciationIndex - 发音索引 (0为第一种发�?
+     * @param {number} pronunciationIndex - 发音索引 (0为第一种发�?
      */
     async playLetter(letter, pronunciationIndex = 0) {
         if (this.isPlaying) {
@@ -63,7 +64,7 @@ class LetterAudioPlayer {
      */
     async playAudioFile(audioPath) {
         return new Promise((resolve, reject) => {
-            // 检查缓�?
+            // 检查缓�?
             if (this.audioCache.has(audioPath)) {
                 const audio = this.audioCache.get(audioPath);
                 this.playAudio(audio, resolve, reject);
@@ -152,7 +153,7 @@ class LetterAudioPlayer {
     }
     
     /**
-     * 获取字母的可用发音数�?
+     * 获取字母的可用发音数�?
      * @param {string} letter - 字母
      * @returns {number} 发音数量
      */
@@ -164,7 +165,7 @@ class LetterAudioPlayer {
     /**
      * 获取字母的所有发音文件名
      * @param {string} letter - 字母
-     * @returns {Array} 发音文件名数�?
+     * @returns {Array} 发音文件名数�?
      */
     getPronunciationFiles(letter) {
         const lowerLetter = letter.toLowerCase();
