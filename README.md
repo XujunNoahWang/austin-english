@@ -52,12 +52,41 @@
 - **随机模式**：打乱顺序，增加趣味性
 - **进度跟踪**：实时显示学习进度
 
+### 🛠️ 技术栈
+
+#### 🏗️ 前端框架
+- **Next.js** (latest) - React全栈框架，支持SSR/SSG
+- **React** (latest) - 用户界面构建库
+- **TypeScript** (latest) - 静态类型检查，提升代码质量
+
+#### 🎨 UI & 样式
+- **Tailwind CSS** (^3.3.0) - 实用优先的CSS框架
+- **PostCSS** (^8.4.31) - CSS后处理工具
+- **Autoprefixer** (^10.4.14) - 自动添加CSS浏览器前缀
+
+#### 🔧 开发工具
+- **ESLint** (9.28.0) - 代码质量检查工具
+- **ESLint Config Next** (15.3.3) - Next.js官方ESLint配置
+
+#### 📦 功能依赖
+- **@heroicons/react** (^2.1.1) - 高质量SVG图标库
+- **dayjs** (^1.11.13) - 轻量级日期处理库
+
+#### 🔧 开发依赖
+- **kill-port** (^2.0.1) - 端口管理工具，开发时自动清理端口
+
+#### 🌐 外部API
+- **Unsplash API** - 高质量图片资源
+- **Web Speech API** - 浏览器原生语音合成
+
 ### 🚀 技术特性
 
 - **🎵 智能音频系统**：26个字母标准发音 + 语音合成
 - **🖼️ 自动配图系统**：Unsplash API + 永久本地缓存
 - **💾 数据管理**：LocalStorage + 导入导出功能
 - **📱 响应式设计**：支持手机、平板、电脑
+- **🔒 类型安全**：全面的TypeScript类型定义
+- **⚡ 性能优化**：Next.js图片优化 + 客户端缓存
 
 ### 🛠️ 快速开始
 
@@ -167,12 +196,41 @@ src/
 - **Random Mode**: Shuffle order for added fun
 - **Progress Tracking**: Real-time learning progress display
 
+### 🛠️ Tech Stack
+
+#### 🏗️ Frontend Framework
+- **Next.js** (latest) - React full-stack framework with SSR/SSG support
+- **React** (latest) - User interface building library
+- **TypeScript** (latest) - Static type checking for better code quality
+
+#### 🎨 UI & Styling
+- **Tailwind CSS** (^3.3.0) - Utility-first CSS framework
+- **PostCSS** (^8.4.31) - CSS post-processing tool
+- **Autoprefixer** (^10.4.14) - Automatically add CSS browser prefixes
+
+#### 🔧 Development Tools
+- **ESLint** (9.28.0) - Code quality linting tool
+- **ESLint Config Next** (15.3.3) - Official Next.js ESLint configuration
+
+#### 📦 Functional Dependencies
+- **@heroicons/react** (^2.1.1) - High-quality SVG icon library
+- **dayjs** (^1.11.13) - Lightweight date processing library
+
+#### 🔧 Development Dependencies
+- **kill-port** (^2.0.1) - Port management tool, auto-clear ports during development
+
+#### 🌐 External APIs
+- **Unsplash API** - High-quality image resources
+- **Web Speech API** - Native browser speech synthesis
+
 ### 🚀 Technical Features
 
 - **🎵 Smart Audio System**: 26-letter standard pronunciation + speech synthesis
 - **🖼️ Auto Image System**: Unsplash API + permanent local caching
 - **💾 Data Management**: LocalStorage + import/export functionality
 - **📱 Responsive Design**: Support for mobile, tablet, and desktop
+- **🔒 Type Safety**: Comprehensive TypeScript type definitions
+- **⚡ Performance Optimization**: Next.js image optimization + client-side caching
 
 ### 🛠️ Quick Start
 
