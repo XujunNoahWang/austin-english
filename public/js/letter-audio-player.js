@@ -20,7 +20,8 @@ class LetterAudioPlayer {
             'i': ['i.mp3', 'i_short.mp3', 'i_long.mp3'],  // 字母名称 I, 音素 /ɪ/, 音素 /aɪ/ (i_long.mp3不存�?
             'j': ['j.MP3', 'dj.MP3'],  // 字母名称 J, 音素 /dʒ/
             'k': ['k.MP3', 'k_sound.MP3'],  // 字母名称 K, 音素 /k/
-            'l': ['l.MP3', 'l_sound.MP3']  // 字母名称 L, 音素 /l/
+            'l': ['l.MP3', 'l_sound.MP3'],  // 字母名称 L, 音素 /l/
+            'm': ['m.MP3', 'm_sound.MP3']  // 字母名称 M, 音素 /m/
         };
         
 
