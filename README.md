@@ -143,7 +143,7 @@ src/
 
 ### 📝 更新日志
 
-**v1.0 (2025.6.14)**
+**v1.0 (2025.6.18)**
 - ✅ 核心功能完成
 - ✅ 中英文界面支持
 - ✅ 音频播放系统
@@ -289,7 +289,7 @@ For higher frequency usage:
 
 ### 📝 Changelog
 
-**v1.0 (2025.6.14)**
+**v1.0 (2025.6.18)**
 - ✅ Core functionality completed
 - ✅ Chinese and English interface support
 - ✅ Audio playback system

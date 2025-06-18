@@ -686,6 +686,11 @@ export default function ChildPage() {
             pronunciationIndex = 1; // 播放 m_sound.mp3
           }
           break;
+        case 'n':
+          if (phoneme === '/n/') {
+            pronunciationIndex = 1; // 播放 n_sound.mp3
+          }
+          break;
       }
       
 
