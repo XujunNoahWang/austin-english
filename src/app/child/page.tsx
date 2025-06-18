@@ -691,6 +691,21 @@ export default function ChildPage() {
             pronunciationIndex = 1; // 播放 n_sound.mp3
           }
           break;
+        case 'o':
+          if (phoneme === '/ɒ/') {
+            pronunciationIndex = 1; // 播放 o_a_sound.mp3
+          } else if (phoneme === '/oʊ/') {
+            // o_long.mp3 不存在，使用语音合成
+            if ('speechSynthesis' in window) {
+              const utterance = new SpeechSynthesisUtterance('oh');
+              utterance.lang = 'en-US';
+              utterance.rate = 0.6;
+              utterance.pitch = 1;
+              speechSynthesis.speak(utterance);
+            }
+            return;
+          }
+          break;
       }
       
 

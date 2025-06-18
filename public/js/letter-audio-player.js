@@ -22,7 +22,8 @@ class LetterAudioPlayer {
             'k': ['k.MP3', 'k_sound.MP3'],  // 字母名称 K, 音素 /k/
             'l': ['l.MP3', 'l_sound.MP3'],  // 字母名称 L, 音素 /l/
             'm': ['m.MP3', 'm_sound.MP3'],  // 字母名称 M, 音素 /m/
-            'n': ['n.MP3', 'n_sound.MP3']  // 字母名称 N, 音素 /n/
+            'n': ['n.MP3', 'n_sound.MP3'],  // 字母名称 N, 音素 /n/
+            'o': ['o.MP3', 'o_a_sound.MP3', 'o_long.MP3']  // 字母名称 O, 音素 /ɒ/, 音素 /oʊ/ (o_long.MP3不存在)
         };
         
 
