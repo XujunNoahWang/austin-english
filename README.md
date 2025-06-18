@@ -2,6 +2,8 @@
 
 [English](#english) | [中文](#中文)
 
+🌐 **在线演示** | **Live Demo**: [https://austin-english.vercel.app/](https://austin-english.vercel.app/)
+
 ---
 
 ## 中文
@@ -9,6 +11,8 @@
 ### 📚 这是什么？
 
 **Austin English** 是一个与众不同的个性化英语复习工具。与传统的英语学习应用不同，这里**没有预设的学习内容**，而是完全由家长根据孩子正在学习的英语课程来自建复习内容库。
+
+🌐 **在线体验**: [https://austin-english.vercel.app/](https://austin-english.vercel.app/)
 
 ### 🎯 为什么与众不同？
 
@@ -153,6 +157,8 @@ src/
 ### 📚 What is this?
 
 **Austin English** is a unique personalized English review tool. Unlike traditional English learning apps, it provides **no pre-made content**. Instead, parents build a custom review content library based on their child's actual English courses.
+
+🌐 **Live Demo**: [https://austin-english.vercel.app/](https://austin-english.vercel.app/)
 
 ### 🎯 Why is it different?
 
@@ -302,6 +308,6 @@ MIT License
 
 ---
 
-**Austin English** - Making English review personalized and effective! �� 
+**Austin English** - Making English review personalized and effective! 
 
 让英语复习个性化且高效！🌟 
