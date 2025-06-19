@@ -260,8 +260,16 @@ export default function WordImageGamePage() {
           <div className="w-full h-full max-w-7xl flex flex-col items-center justify-center text-center">
             {/* 题目单词 */}
             <div className="mb-8">
-              <div className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-xl inline-block">
-                <div className="text-8xl font-bold font-comic text-gray-800">
+              <div className="bg-white/90 backdrop-blur-sm p-4 sm:p-8 rounded-2xl shadow-xl inline-block max-w-[90vw]">
+                <div className={`font-bold font-comic text-gray-800 text-center break-words leading-tight ${
+                  currentQuestion.targetWord.text.length <= 4 
+                    ? 'text-6xl sm:text-8xl' 
+                    : currentQuestion.targetWord.text.length <= 8 
+                      ? 'text-4xl sm:text-6xl' 
+                      : currentQuestion.targetWord.text.length <= 12
+                        ? 'text-3xl sm:text-5xl'
+                        : 'text-2xl sm:text-4xl'
+                }`}>
                   {currentQuestion.targetWord.text}
                 </div>
               </div>
