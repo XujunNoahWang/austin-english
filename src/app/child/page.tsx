@@ -1076,15 +1076,15 @@ export default function ChildPage() {
         </div>
 
         {/* 主要内容区域 - 自然流式布局 */}
-        <div className="flex-1 p-4 md:p-6">
-          <div className="max-w-4xl mx-auto">
+        <div className="flex-1 p-2 sm:p-4 lg:p-6">
+          <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-4xl mx-auto px-2">
             {/* 内容卡片区域 */}
             <div 
               key={`${currentItem?.id || 'no-item'}-${forceUpdate}-${currentIndex}`}
-              className="bg-white rounded-3xl shadow-3xl border-4 border-blue-200 mb-6 overflow-hidden"
+              className="bg-white rounded-2xl sm:rounded-3xl shadow-3xl border-2 sm:border-4 border-blue-200 mb-6 overflow-hidden"
             >
               {/* 内容主体 */}
-              <div className="flex flex-col lg:flex-row min-h-[500px]">
+              <div className="flex flex-col lg:flex-row min-h-[400px] sm:min-h-[500px]">
                   {/* 字母复习 */}
                   {reviewMode === 'letters' && (
                     <div className="w-full flex items-center justify-center p-8 min-h-[500px]">
@@ -1136,7 +1136,7 @@ export default function ChildPage() {
                   {reviewMode === 'words' && currentItem && (
                     <>
                       {/* 图片区 - 移动端顶部，桌面端左侧 */}
-                      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+                      <div className="w-full lg:w-1/2 flex items-center justify-center p-2 sm:p-4">
                       {(() => {
                         const wordItem = currentItem as Word;
                         if (!wordItem || !wordItem.text) {
@@ -1201,9 +1201,9 @@ export default function ChildPage() {
                     </div>
                     
                       {/* 文字和控制区域 - 移动端底部，桌面端右侧 */}
-                      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 space-y-6">
+                      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-3 sm:p-6 space-y-4 sm:space-y-6">
                         {/* 英文单词 */}
-                        <div className="text-4xl md:text-6xl font-bold text-green-600 font-kid text-center">
+                        <div className="text-3xl sm:text-4xl lg:text-6xl font-bold text-green-600 font-kid text-center">
                           {(currentItem as Word).text || <span className="font-kid-chinese">{t.unknownWord}</span>}
                         </div>
                       
@@ -1238,11 +1238,11 @@ export default function ChildPage() {
                   </>
                 )}
 
-                {/* 句子复习 - 响应式布局 */}
+                                      {/* 句子复习 - 响应式布局 */}
                 {reviewMode === 'sentences' && currentItem && (
                   <>
                       {/* 图片区 - 移动端顶部，桌面端左侧 */}
-                      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
+                      <div className="w-full lg:w-1/2 flex items-center justify-center p-2 sm:p-4">
                       {(() => {
                         const sentenceItem = currentItem as Sentence;
                         if (!sentenceItem || !sentenceItem.text) {
@@ -1307,9 +1307,9 @@ export default function ChildPage() {
                     </div>
                     
                       {/* 文字和控制区域 - 移动端底部，桌面端右侧 */}
-                      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 space-y-6">
+                      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-3 sm:p-6 space-y-4 sm:space-y-6">
                         {/* 英文句子 */}
-                        <div className="text-2xl md:text-3xl font-bold text-purple-600 leading-relaxed font-kid text-center">
+                        <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 leading-relaxed font-kid text-center">
                           {(currentItem as Sentence).text}
                         </div>
                       
@@ -1374,8 +1374,8 @@ export default function ChildPage() {
         </div>
 
         {/* 底部进度指示 - 紧凑设计 */}
-        <div className="p-4 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto">
+        <div className="p-2 sm:p-4 bg-white/80 backdrop-blur-sm">
+          <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-4xl mx-auto px-2">
             <div className="flex justify-center space-x-3">
               {data.map((_, index) => (
                 <button
