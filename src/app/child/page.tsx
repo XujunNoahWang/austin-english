@@ -282,9 +282,32 @@ export default function ChildPage() {
   const [sentenceImages, setSentenceImages] = useState<Record<string, string>>({});
   const [loadingSentenceImages, setLoadingSentenceImages] = useState<Record<string, boolean>>({});
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
+  const [pendingFirstAudio, setPendingFirstAudio] = useState<string | null>(null);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   // 获取当前语言的文本
   const t = getChildTexts(language);
+
+  // 预加载音频函数
+  const preloadAudio = (text: string) => {
+    if ('speechSynthesis' in window) {
+      // 初始化语音合成系统
+      speechSynthesis.getVoices();
+      // 保存待播放的文本
+      setPendingFirstAudio(text);
+    }
+  };
+
+  // 播放语音函数
+  const playAudio = (text: string, rate: number = 0.8) => {
+    if (text && 'speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = rate;
+      utterance.pitch = 1;
+      speechSynthesis.speak(utterance);
+    }
+  };
 
   // 加载档案数据的函数
   const loadProfileData = useCallback(() => {
@@ -539,16 +562,39 @@ export default function ChildPage() {
 
   const handlePrevious = useCallback(() => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+      // 自动播放音频
+      const currentData = getCurrentData();
+      if (currentData[newIndex]) {
+        setTimeout(() => {
+          if (reviewMode === 'words') {
+            playAudio((currentData[newIndex] as Word).text, 0.8);
+          } else if (reviewMode === 'sentences') {
+            playAudio((currentData[newIndex] as Sentence).text, 0.7);
+          }
+        }, 100);
+      }
     }
-  }, [currentIndex]);
+  }, [currentIndex, getCurrentData, reviewMode]);
 
   const handleNext = useCallback(() => {
     const data = getCurrentData();
     if (currentIndex < data.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+      // 自动播放音频
+      if (data[newIndex]) {
+        setTimeout(() => {
+          if (reviewMode === 'words') {
+            playAudio((data[newIndex] as Word).text, 0.8);
+          } else if (reviewMode === 'sentences') {
+            playAudio((data[newIndex] as Sentence).text, 0.7);
+          }
+        }, 100);
+      }
     }
-  }, [currentIndex, getCurrentData]);
+  }, [currentIndex, getCurrentData, reviewMode]);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (reviewMode === 'selection') return;
@@ -566,6 +612,18 @@ export default function ChildPage() {
       document.removeEventListener('keydown', handleKeyPress);
     };
   }, [handleKeyPress]);
+
+  // 监听第一次加载，当页面完全加载后立即播放预加载的音频
+  useEffect(() => {
+    const currentData = getCurrentData();
+    if (currentData.length > 0 && pendingFirstAudio && isFirstLoad && (reviewMode === 'words' || reviewMode === 'sentences')) {
+      // 页面完全加载后立即播放预加载的音频
+      const rate = reviewMode === 'sentences' ? 0.7 : 0.8;
+      playAudio(pendingFirstAudio, rate);
+      setIsFirstLoad(false); // 标记第一次加载已完成
+      setPendingFirstAudio(null); // 清除待播放音频
+    }
+  }, [getCurrentData, pendingFirstAudio, isFirstLoad, reviewMode]);
 
   const playLetterSound = (letter: Letter) => {
     if (typeof window !== 'undefined' && (window as typeof window & { letterAudioPlayer?: { playLetter: (letter: string, index?: number) => void } }).letterAudioPlayer) {
@@ -768,6 +826,33 @@ export default function ChildPage() {
     window.dispatchEvent(new CustomEvent('profileDataChanged'));
   };
 
+  // 处理dot导航点击，包含音频播放
+  const handleDotNavigation = (index: number) => {
+    setCurrentIndex(index);
+    
+    // 延迟一点播放音频，确保状态更新完成
+    setTimeout(() => {
+      const data = getCurrentData();
+      const item = data[index];
+      if (!item) return;
+
+      if (reviewMode === 'letters') {
+        const letter = item as Letter;
+        playLetterSound(letter);
+      } else if (reviewMode === 'words') {
+        const word = item as Word;
+        if (word.text) {
+          playAudio(word.text, 0.8);
+        }
+      } else if (reviewMode === 'sentences') {
+        const sentence = item as Sentence;
+        if (sentence.text) {
+          playAudio(sentence.text, 0.7);
+        }
+      }
+    }, 100);
+  };
+
   const renderSelectionMode = () => (
     <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-8">
       <div className="max-w-7xl mx-auto">
@@ -782,7 +867,7 @@ export default function ChildPage() {
             </h1>
             {currentProfile && (
               <p className="text-2xl text-gray-700 dark:text-gray-300 font-medium font-kid-chinese">
-                {currentProfile.name} {language === 'zh' ? '小朋友，选择你想学习的内容吧' : ', choose what you want to learn!'}
+                {currentProfile.name}{t.childGreeting}
               </p>
             )}
           </div>
@@ -797,7 +882,7 @@ export default function ChildPage() {
         </div>
 
         {/* 选择复习内容 - 更大更友好的卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* 字母复习 - 儿童友好设计 */}
           <div
             onClick={() => {
@@ -808,15 +893,12 @@ export default function ChildPage() {
           >
             <div className="text-center">
               <div className="text-9xl mb-6 animate-bounce">🔤</div>
-              <h3 className="text-4xl font-bold text-blue-600 mb-4 font-kid-chinese">
+              <h3 className="text-4xl font-bold text-blue-600 mb-8 font-kid-chinese">
                 {t.letterReview}
               </h3>
-              <p className="text-gray-600 text-xl mb-6 font-medium font-kid-chinese">
-                {t.letterReviewDesc}
-              </p>
               <div className="px-6 py-3 bg-blue-100 rounded-full text-xl font-bold text-blue-700 inline-block">
                 {currentProfile ? 
-                  `${currentProfile.data.letters.filter(l => l.isVisible).length} ${language === 'zh' ? '个字母' : 'letters'}` : 
+                  `${currentProfile.data.letters.filter(l => l.isVisible).length} ${t.letters}` : 
                   t.loading
                 }
               </div>
@@ -828,20 +910,22 @@ export default function ChildPage() {
             onClick={() => {
               setReviewMode('words');
               setCurrentIndex(0);
+              setIsFirstLoad(true);
+              // 预加载第一个单词的音频
+              if (currentProfile?.data.words && currentProfile.data.words.length > 0) {
+                preloadAudio(currentProfile.data.words[0].text);
+              }
             }}
             className="bg-white rounded-3xl p-12 shadow-2xl hover:shadow-3xl transition-all duration-300 cursor-pointer border-4 border-green-200 hover:border-green-400 transform hover:scale-105 hover:rotate-1"
           >
             <div className="text-center">
               <div className="text-9xl mb-6 animate-bounce">📚</div>
-              <h3 className="text-4xl font-bold text-green-600 mb-4 font-kid-chinese">
+              <h3 className="text-4xl font-bold text-green-600 mb-8 font-kid-chinese">
                 {t.wordPractice}
               </h3>
-              <p className="text-gray-600 text-xl mb-6 font-medium font-kid-chinese">
-                {t.wordPracticeDesc}
-              </p>
               <div className="px-6 py-3 bg-green-100 rounded-full text-xl font-bold text-green-700 inline-block">
                 {currentProfile ? 
-                  `${currentProfile.data.words.length} ${language === 'zh' ? '个单词' : 'words'}` : 
+                  `${currentProfile.data.words.length} ${t.words}` : 
                   t.loading
                 }
               </div>
@@ -853,21 +937,56 @@ export default function ChildPage() {
             onClick={() => {
               setReviewMode('sentences');
               setCurrentIndex(0);
+              setIsFirstLoad(true);
+              // 预加载第一个句子的音频
+              if (currentProfile?.data.sentences && currentProfile.data.sentences.length > 0) {
+                preloadAudio(currentProfile.data.sentences[0].text);
+              }
             }}
             className="bg-white rounded-3xl p-12 shadow-2xl hover:shadow-3xl transition-all duration-300 cursor-pointer border-4 border-purple-200 hover:border-purple-400 transform hover:scale-105 hover:-rotate-1"
           >
             <div className="text-center">
               <div className="text-9xl mb-6 animate-bounce">💬</div>
-              <h3 className="text-4xl font-bold text-purple-600 mb-4 font-kid-chinese">
+              <h3 className="text-4xl font-bold text-purple-600 mb-8 font-kid-chinese">
                 {t.sentenceReading}
               </h3>
-              <p className="text-gray-600 text-xl mb-6 font-medium font-kid-chinese">
-                {t.sentenceReadingDesc}
-              </p>
               <div className="px-6 py-3 bg-purple-100 rounded-full text-xl font-bold text-purple-700 inline-block">
                 {currentProfile ? 
-                  `${currentProfile.data.sentences.length} ${language === 'zh' ? '个句子' : 'sentences'}` : 
+                  `${currentProfile.data.sentences.length} ${t.sentences}` : 
                   t.loading
+                }
+              </div>
+            </div>
+          </div>
+
+          {/* 趣味游戏 - 儿童友好设计 */}
+          <div
+            onClick={() => {
+              if (currentProfile && currentProfile.data.words.length >= 3) {
+                window.location.href = '/child/game';
+              }
+            }}
+            className={`rounded-3xl p-12 shadow-2xl hover:shadow-3xl transition-all duration-300 cursor-pointer border-4 transform hover:scale-105 hover:rotate-1 ${
+              currentProfile && currentProfile.data.words.length >= 3
+                ? 'bg-white border-orange-200 hover:border-orange-400'
+                : 'bg-gray-100 border-gray-300 cursor-not-allowed opacity-60'
+            }`}
+          >
+            <div className="text-center">
+              <div className="text-9xl mb-6 animate-bounce">🎮</div>
+              <h3 className="text-4xl font-bold text-orange-600 mb-8 font-kid-chinese">
+                {t.funGame}
+              </h3>
+              <div className={`px-6 py-3 rounded-full text-xl font-bold inline-block ${
+                currentProfile && currentProfile.data.words.length >= 3
+                  ? 'bg-orange-100 text-orange-700'
+                  : 'bg-gray-200 text-gray-500'
+              }`}>
+                {currentProfile ? 
+                  currentProfile.data.words.length >= 3 
+                    ? t.startGame
+                    : t.needWords
+                  : t.loading
                 }
               </div>
             </div>
@@ -876,15 +995,12 @@ export default function ChildPage() {
 
         {/* 底部装饰 - 儿童友好元素 */}
         <div className="p-8 text-center">
-          <div className="text-6xl space-x-8 mb-4">
+          <div className="text-6xl space-x-8">
             <span className="animate-bounce inline-block" style={{animationDelay: '0s'}}>🌟</span>
             <span className="animate-bounce inline-block" style={{animationDelay: '0.2s'}}>🌈</span>
             <span className="animate-bounce inline-block" style={{animationDelay: '0.4s'}}>🎈</span>
             <span className="animate-bounce inline-block" style={{animationDelay: '0.6s'}}>🎨</span>
             <span className="animate-bounce inline-block" style={{animationDelay: '0.8s'}}>🌟</span>
-          </div>
-          <div className="text-2xl text-gray-600 font-medium font-kid-chinese">
-            {language === 'zh' ? '选择你最喜欢的学习内容吧🌟' : 'Choose your favorite learning content! 🌟'}
           </div>
         </div>
       </div>
@@ -899,16 +1015,16 @@ export default function ChildPage() {
           <div className="text-center bg-white rounded-3xl p-16 shadow-2xl border-4 border-orange-200">
             <div className="text-9xl mb-8 animate-bounce">🤔</div>
             <h2 className="text-5xl font-bold text-orange-600 mb-6 font-kid-chinese">
-              {language === 'zh' ? '哎呀！这里还是空空如也🤔' : 'Oops! Nothing here yet! 🤔'}
+              {t.emptyStateTitle}
             </h2>
             <p className="text-gray-600 text-2xl mb-10 font-medium font-kid-chinese">
-              {language === 'zh' ? '让爸爸妈妈先添加一些学习内容吧🌟' : 'Ask your parents to add some learning content first! 🌟'}
+              {t.emptyStateDesc}
             </p>
             <button
               onClick={() => setReviewMode('selection')}
               className="px-12 py-6 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-2xl font-bold rounded-2xl hover:from-blue-600 hover:to-purple-600 transform hover:scale-110 transition-all duration-300 shadow-xl hover:shadow-2xl"
                           >
-                🔙 {language === 'zh' ? '返回选择' : 'Back to Selection'}
+                🔙 {t.backToSelection}
               </button>
           </div>
         </div>
@@ -922,7 +1038,7 @@ export default function ChildPage() {
           <button
             onClick={() => setReviewMode('selection')}
             className="p-3 rounded-2xl bg-white shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
-            title={language === 'zh' ? '返回选择' : 'Back to Selection'}
+            title={t.backToSelection}
           >
             <ArrowLeftIcon className="h-8 w-8 text-blue-500" />
           </button>
@@ -946,7 +1062,7 @@ export default function ChildPage() {
                   ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg' 
                   : 'bg-white text-gray-700 shadow-lg hover:shadow-xl'
               }`}
-              title={isRandomMode ? (language === 'zh' ? '关闭随机模式' : 'Turn off random mode') : (language === 'zh' ? '开启随机模式' : 'Turn on random mode')}
+              title={isRandomMode ? t.randomModeOff : t.randomModeOn}
             >
               <ArrowsRightLeftIcon className="h-4 w-4" />
               {isRandomMode ? '🎲' : '📋'}
@@ -1017,7 +1133,7 @@ export default function ChildPage() {
                           ))
                         ) : (
                           <span className="text-gray-500 text-xl bg-gray-100 px-4 py-3 rounded-2xl">
-                            🎵 暂无音标
+                            🎵 {t.noPhonetics}
                           </span>
                         )}
                       </div>
@@ -1040,7 +1156,7 @@ export default function ChildPage() {
                               <div className="text-center">
                                 <div className="text-6xl mb-4">🤔</div>
                                 <div className="text-gray-600 text-xl font-medium font-kid-chinese">
-                                  单词数据错误
+                                  {t.wordDataError}
                                 </div>
                               </div>
                             </div>
@@ -1057,7 +1173,7 @@ export default function ChildPage() {
                               <div className="text-center">
                                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mx-auto mb-6"></div>
                                 <div className="text-2xl font-bold text-gray-700 font-kid-chinese">
-                                  🖼 加载图片...
+                                  🖼 {t.loadingImage}
                                 </div>
                               </div>
                             </div>
@@ -1099,23 +1215,19 @@ export default function ChildPage() {
                     <div className="w-1/2 flex flex-col items-center justify-center p-6 space-y-6">
                       {/* 英文单词 */}
                       <div className="text-6xl font-bold text-green-600 font-kid text-center">
-                        {(currentItem as Word).text || <span className="font-kid-chinese">未知单词</span>}
+                        {(currentItem as Word).text || <span className="font-kid-chinese">{t.unknownWord}</span>}
                       </div>
                       
                       {/* 语音播放按钮 */}
                       <button
                         onClick={() => {
                           const wordItem = currentItem as Word;
-                          if (wordItem && wordItem.text && 'speechSynthesis' in window) {
-                            const utterance = new SpeechSynthesisUtterance(wordItem.text);
-                            utterance.lang = 'en-US';
-                            utterance.rate = 0.8;
-                            utterance.pitch = 1;
-                            speechSynthesis.speak(utterance);
+                          if (wordItem && wordItem.text) {
+                            playAudio(wordItem.text, 0.8);
                           }
                         }}
                         className="p-6 rounded-full bg-green-100 hover:bg-green-200 transition-all duration-300 transform hover:scale-110 shadow-xl hover:shadow-2xl border-4 border-green-300"
-                        title="点击播放发音"
+                        title={t.clickToPlay}
                       >
                         <SpeakerWaveIcon className="h-12 w-12 text-green-600" />
                       </button>
@@ -1129,7 +1241,7 @@ export default function ChildPage() {
                             key={n}
                             className={`h-10 w-10 cursor-pointer transition-all duration-300 transform hover:scale-125 ${n <= ((currentItem as Word).star || 0) ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-300 hover:text-yellow-200'}`}
                             onClick={() => updateWordStar((currentItem as Word).id, n)}
-                            title={`熟练程度 ${n}星`}
+                            title={`${t.proficiencyLevel} ${n}${t.stars}`}
                           />
                         ))}
                       </div>
@@ -1150,7 +1262,7 @@ export default function ChildPage() {
                               <div className="text-center">
                                 <div className="text-6xl mb-4">🤔</div>
                                 <div className="text-gray-600 text-xl font-medium font-kid-chinese">
-                                  句子数据错误
+                                  {t.sentenceDataError}
                                 </div>
                               </div>
                             </div>
@@ -1167,7 +1279,7 @@ export default function ChildPage() {
                               <div className="text-center">
                                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mx-auto mb-6"></div>
                                 <div className="text-2xl font-bold text-gray-700 font-kid-chinese">
-                                  🖼 加载图片...
+                                  🖼 {t.loadingImage}
                                 </div>
                               </div>
                             </div>
@@ -1179,7 +1291,7 @@ export default function ChildPage() {
                             <div className="w-full h-96 rounded-3xl shadow-2xl overflow-hidden border-4 border-purple-200">
                               <Image
                                 src={imageUrl}
-                                alt="句子配图"
+                                alt={t.sentenceImage}
                                 width={500}
                                 height={400}
                                 className="w-full h-full object-cover"
@@ -1197,7 +1309,7 @@ export default function ChildPage() {
                             <div className="text-center">
                               <div className="text-6xl mb-4">📝</div>
                               <div className="text-2xl font-bold text-gray-700 font-kid-chinese">
-                                句子配图
+                                {t.sentenceImage}
                               </div>
                             </div>
                           </div>
@@ -1216,16 +1328,12 @@ export default function ChildPage() {
                       <button
                         onClick={() => {
                           const sentenceItem = currentItem as Sentence;
-                          if (sentenceItem && sentenceItem.text && 'speechSynthesis' in window) {
-                            const utterance = new SpeechSynthesisUtterance(sentenceItem.text);
-                            utterance.lang = 'en-US';
-                            utterance.rate = 0.7;
-                            utterance.pitch = 1;
-                            speechSynthesis.speak(utterance);
+                          if (sentenceItem && sentenceItem.text) {
+                            playAudio(sentenceItem.text, 0.7);
                           }
                         }}
                         className="p-6 rounded-full bg-purple-100 hover:bg-purple-200 transition-all duration-300 transform hover:scale-110 shadow-xl hover:shadow-2xl border-4 border-purple-300"
-                        title="点击播放发音"
+                        title={t.clickToPlay}
                       >
                         <SpeakerWaveIcon className="h-12 w-12 text-purple-600" />
                       </button>
@@ -1239,7 +1347,7 @@ export default function ChildPage() {
                             key={n}
                             className={`h-10 w-10 cursor-pointer transition-all duration-300 transform hover:scale-125 ${n <= ((currentItem as Sentence).star || 0) ? 'text-yellow-400 drop-shadow-lg' : 'text-gray-300 hover:text-yellow-200'}`}
                             onClick={() => updateSentenceStar((currentItem as Sentence).id, n)}
-                            title={`熟练程度 ${n}星`}
+                            title={`${t.proficiencyLevel} ${n}${t.stars}`}
                           />
                         ))}
                       </div>
@@ -1267,7 +1375,7 @@ export default function ChildPage() {
               {data.map((_, index) => (
                 <button
                   key={index}
-                  onClick={() => setCurrentIndex(index)}
+                  onClick={() => handleDotNavigation(index)}
                   className={`w-4 h-4 rounded-full transition-all duration-300 transform hover:scale-125 ${
                     index === currentIndex
                       ? 'bg-gradient-to-r from-blue-500 to-purple-500 scale-125 shadow-lg'
@@ -1286,19 +1394,7 @@ export default function ChildPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">😕</div>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4 font-kid-chinese">
-            档案加载中...
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6 font-kid-chinese">
-            请稍候，正在加载档案数据
-          </p>
-          <button
-            onClick={() => window.location.href = '/'}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            <span className="font-kid-chinese">返回首页</span>
-          </button>
+          <div className="text-8xl animate-bounce">🎮</div>
         </div>
       </div>
     );

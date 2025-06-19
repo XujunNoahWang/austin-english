@@ -136,7 +136,38 @@ export const childTexts = {
     // 句子学习
     sentenceLearning: '句子学习',
     currentSentence: '当前句子',
-    reading: '阅读'
+    reading: '阅读',
+    // 趣味游戏
+    funGame: '趣味游戏',
+    funGameDesc: '单词图片匹配游戏',
+    gameQuestion: '题目',
+    startGame: '开始游戏',
+    needWords: '需要3个单词',
+    backToSelection: '返回选择',
+
+    needMoreWords: '哎呀！还需要更多单词🤔',
+    addMoreWords: '让爸爸妈妈先添加至少3个单词吧🌟',
+    // 交互提示
+    clickToPlay: '点击播放发音',
+    proficiencyLevel: '熟练程度',
+    stars: '星',
+    loadingProfileData: '请稍候，正在加载档案数据',
+    loadingImage: '加载图片...',
+    // 错误提示
+    unknownWord: '未知单词',
+    sentenceDataError: '句子数据错误',
+    sentenceImage: '句子配图',
+    wordDataError: '单词数据错误',
+    // 界面文本
+    childGreeting: '小朋友，选择你想学习的内容吧',
+    letters: '个字母',
+    words: '个单词',
+    sentences: '个句子',
+    emptyStateTitle: '哎呀！这里还是空空如也🤔',
+    emptyStateDesc: '让爸爸妈妈先添加一些学习内容吧🌟',
+    randomModeOn: '开启随机模式',
+    randomModeOff: '关闭随机模式',
+    noPhonetics: '暂无音标'
   },
   en: {
     title: 'Learning Center',
@@ -170,7 +201,38 @@ export const childTexts = {
     // Sentence learning
     sentenceLearning: 'Sentence Learning',
     currentSentence: 'Current Sentence',
-    reading: 'Reading'
+    reading: 'Reading',
+    // Fun game
+    funGame: 'Fun Game',
+    funGameDesc: 'Word picture matching game',
+    gameQuestion: 'Question',
+    startGame: 'Start Game',
+    needWords: 'Need 3 words',
+    backToSelection: 'Back to Selection',
+
+    needMoreWords: 'Oops! Need more words! 🤔',
+    addMoreWords: 'Ask your parents to add at least 3 words first! 🌟',
+    // Interactive hints
+    clickToPlay: 'Click to play pronunciation',
+    proficiencyLevel: 'Proficiency level',
+    stars: 'stars',
+    loadingProfileData: 'Please wait, loading profile data',
+    loadingImage: 'Loading image...',
+    // Error messages
+    unknownWord: 'Unknown Word',
+    sentenceDataError: 'Sentence data error',
+    sentenceImage: 'Sentence Image',
+    wordDataError: 'Word data error',
+    // Interface text
+    childGreeting: ', choose what you want to learn!',
+    letters: 'letters',
+    words: 'words',
+    sentences: 'sentences',
+    emptyStateTitle: 'Oops! Nothing here yet! 🤔',
+    emptyStateDesc: 'Ask your parents to add some learning content first! 🌟',
+    randomModeOn: 'Turn on random mode',
+    randomModeOff: 'Turn off random mode',
+    noPhonetics: 'No phonetics'
   }
 };
 
