@@ -88,10 +88,14 @@
 ### 🚀 技术特性
 
 - **🎵 智能音频系统**：26个字母标准发音 + 语音合成 + 自动播放优化
-- **🖼️ 自动配图系统**：Unsplash API + 永久本地缓存 + 快速SVG占位符
+- **🖼️ 智能图片系统**：
+  - 缓存优先策略：localStorage永久缓存 + 跨设备智能获取
+  - API集成：Unsplash高质量图片 + 速率限制优雅处理
+  - 降级机制：快速SVG占位符 + 错误恢复
+  - 性能优化：图片预加载 + 异步批量获取 + 内存管理
 - **🎮 游戏引擎**：模块化游戏系统，图片预加载，音频同步
 - **💾 数据管理**：LocalStorage + 导入导出功能 + 实时同步
-- **📱 响应式设计**：支持手机、平板、电脑，统一交互体验
+- **📱 响应式设计**：移动端优化 + 自适应布局 + 统一交互体验
 - **🔒 类型安全**：全面的TypeScript类型定义，零类型错误
 - **⚡ 性能优化**：Next.js图片优化 + 客户端缓存 + 水合错误修复
 
@@ -158,6 +162,20 @@ src/
 - 在游戏中巩固单词记忆，寓教于乐
 
 ### 📝 更新日志
+
+**v0.3 (2025.6.19)**
+- 📱 **移动端优化**：
+  - 修复学习中心标题换行问题，响应式字体大小适配
+  - 优化移动端交互体验和布局
+- 🎮 **游戏模块图片加载优化**：
+  - 修复游戏页面图片加载缺失问题
+  - 添加主动图片获取逻辑，解决移动端缓存隔离问题
+  - 优化API限制处理，超限时使用优雅占位符
+  - 改进图片加载策略：缓存优先 → API获取 → 占位符降级
+- 🔧 **技术架构改进**：
+  - 统一游戏模块和学习模块的图片获取逻辑
+  - 增强错误处理和降级机制
+  - 优化异步图片加载性能
 
 **v0.2 (2025.6.19)**
 - 🎮 **新增趣味游戏模块**：图片选择游戏，寓教于乐
@@ -271,10 +289,14 @@ src/
 ### 🚀 Technical Features
 
 - **🎵 Smart Audio System**: 26-letter standard pronunciation + speech synthesis + auto-play optimization
-- **🖼️ Auto Image System**: Unsplash API + permanent local caching + fast SVG placeholders
+- **🖼️ Intelligent Image System**:
+  - Cache-first strategy: localStorage permanent caching + cross-device smart fetching
+  - API integration: Unsplash high-quality images + graceful rate limit handling
+  - Fallback mechanism: Fast SVG placeholders + error recovery
+  - Performance optimization: Image preloading + async batch fetching + memory management
 - **🎮 Game Engine**: Modular game system with image preloading and audio synchronization
 - **💾 Data Management**: LocalStorage + import/export functionality + real-time sync
-- **📱 Responsive Design**: Support for mobile, tablet, and desktop with unified interaction
+- **📱 Responsive Design**: Mobile optimization + adaptive layout + unified interaction experience
 - **🔒 Type Safety**: Comprehensive TypeScript type definitions with zero type errors
 - **⚡ Performance Optimization**: Next.js image optimization + client-side caching + hydration error fixes
 
@@ -341,6 +363,20 @@ For higher frequency usage:
 - Reinforce word memory through games, making learning enjoyable
 
 ### 📝 Changelog
+
+**v0.3 (2025.6.19)**
+- 📱 **Mobile Optimization**:
+  - Fixed learning center title line-break issue with responsive font sizing
+  - Enhanced mobile interaction experience and layout
+- 🎮 **Game Module Image Loading Enhancement**:
+  - Fixed missing image loading in game pages
+  - Added proactive image fetching logic to solve mobile cache isolation
+  - Optimized API rate limit handling with graceful placeholders
+  - Improved image loading strategy: Cache First → API Fetch → Placeholder Fallback
+- 🔧 **Technical Architecture Improvements**:
+  - Unified image fetching logic between game and learning modules
+  - Enhanced error handling and fallback mechanisms
+  - Optimized async image loading performance
 
 **v0.2 (2025.6.19)**
 - 🎮 **New Fun Game Module**: Picture selection game for edutainment
