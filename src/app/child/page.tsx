@@ -1011,7 +1011,7 @@ export default function ChildPage() {
     const data = getCurrentData();
     if (data.length === 0) {
       return (
-        <div className="h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-8">
           <div className="text-center bg-white rounded-3xl p-16 shadow-2xl border-4 border-orange-200">
             <div className="text-9xl mb-8 animate-bounce">🤔</div>
             <h2 className="text-5xl font-bold text-orange-600 mb-6 font-kid-chinese">
@@ -1032,9 +1032,9 @@ export default function ChildPage() {
     }
 
     return (
-      <div className="h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex flex-col overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex flex-col">
         {/* 头部导航 - 紧凑设计 */}
-        <div className="flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-lg">
+        <div className="flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-lg sticky top-0 z-50">
           <button
             onClick={() => setReviewMode('selection')}
             className="p-3 rounded-2xl bg-white shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
@@ -1049,9 +1049,6 @@ export default function ChildPage() {
               {reviewMode === 'words' && `📚 ${t.wordLearning}`}
               {reviewMode === 'sentences' && `💬 ${t.sentenceLearning}`}
             </h2>
-            <p className="text-lg text-gray-700 font-medium">
-              {currentIndex + 1} / {data.length}
-            </p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -1078,28 +1075,20 @@ export default function ChildPage() {
           </div>
         </div>
 
-        {/* 主要内容区域 - 分栏布局，无滚动 */}
-        <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
-          <div className="w-full h-full max-w-7xl flex items-center justify-between">
-            {/* 左侧导航按钮 */}
-            <button
-              onClick={handlePrevious}
-              disabled={currentIndex === 0}
-              className="p-6 rounded-full bg-white shadow-2xl hover:shadow-3xl disabled:opacity-30 disabled:cursor-not-allowed transform hover:scale-110 transition-all duration-300 z-10"
+        {/* 主要内容区域 - 自然流式布局 */}
+        <div className="flex-1 p-4 md:p-6">
+          <div className="max-w-7xl mx-auto">
+            {/* 内容卡片区域 */}
+            <div 
+              key={`${currentItem?.id || 'no-item'}-${forceUpdate}-${currentIndex}`}
+              className="bg-white rounded-3xl shadow-3xl border-4 border-blue-200 mb-6 overflow-hidden"
             >
-              <ArrowLeftIcon className="h-16 w-16 text-blue-500" />
-            </button>
-
-            {/* 中间内容区域 - 分为左右两栏 */}
-            <div className="flex-1 mx-8 h-full flex items-center justify-center">
-              <div 
-                key={`${currentItem?.id || 'no-item'}-${forceUpdate}-${currentIndex}`}
-                className="w-full h-full max-h-[700px] bg-white rounded-3xl shadow-3xl border-4 border-blue-200 flex overflow-hidden"
-              >
-                {/* 字母复习 */}
-                {reviewMode === 'letters' && (
-                  <div className="w-full flex items-center justify-center p-8">
-                    <div className="text-center">
+              {/* 内容主体 */}
+              <div className="flex flex-col lg:flex-row min-h-[500px]">
+                  {/* 字母复习 */}
+                  {reviewMode === 'letters' && (
+                    <div className="w-full flex items-center justify-center p-8 min-h-[500px]">
+                      <div className="text-center">
                       {/* 大写和小写字母 */}
                       <div className="text-8xl font-bold mb-8 flex justify-center items-center gap-8 font-kid">
                         <button
@@ -1143,16 +1132,16 @@ export default function ChildPage() {
                   </div>
                 )}
 
-                {/* 单词复习 - 左右分栏 */}
-                {reviewMode === 'words' && currentItem && (
-                  <>
-                    {/* 左侧：图片区 - 更大尺寸，无动画 */}
-                    <div className="w-1/2 flex items-center justify-center p-4">
+                  {/* 单词复习 - 响应式布局 */}
+                  {reviewMode === 'words' && currentItem && (
+                    <>
+                      {/* 图片区 - 移动端顶部，桌面端左侧 */}
+                      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
                       {(() => {
                         const wordItem = currentItem as Word;
                         if (!wordItem || !wordItem.text) {
                           return (
-                            <div className="w-full h-96 bg-gradient-to-br from-red-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-red-200 shadow-2xl">
+                            <div className="w-full h-64 md:h-96 bg-gradient-to-br from-red-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-red-200 shadow-2xl">
                               <div className="text-center">
                                 <div className="text-6xl mb-4">🤔</div>
                                 <div className="text-gray-600 text-xl font-medium font-kid-chinese">
@@ -1169,7 +1158,7 @@ export default function ChildPage() {
                         
                         if (isLoading) {
                           return (
-                            <div className="w-full h-96 rounded-3xl bg-gradient-to-br from-blue-100 to-purple-100 shadow-2xl flex items-center justify-center border-4 border-blue-200">
+                            <div className="w-full h-64 md:h-96 rounded-3xl bg-gradient-to-br from-blue-100 to-purple-100 shadow-2xl flex items-center justify-center border-4 border-blue-200">
                               <div className="text-center">
                                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mx-auto mb-6"></div>
                                 <div className="text-2xl font-bold text-gray-700 font-kid-chinese">
@@ -1182,7 +1171,7 @@ export default function ChildPage() {
                         
                         if (imageUrl) {
                           return (
-                            <div className="w-full h-96 rounded-3xl shadow-2xl overflow-hidden border-4 border-green-200">
+                            <div className="w-full h-64 md:h-96 rounded-3xl shadow-2xl overflow-hidden border-4 border-green-200">
                               <Image
                                 src={imageUrl}
                                 alt={word.toUpperCase()}
@@ -1199,7 +1188,7 @@ export default function ChildPage() {
                         }
                         
                         return (
-                          <div className="w-full h-96 rounded-3xl bg-gradient-to-br from-green-100 to-blue-100 shadow-2xl flex items-center justify-center border-4 border-green-200">
+                          <div className="w-full h-64 md:h-96 rounded-3xl bg-gradient-to-br from-green-100 to-blue-100 shadow-2xl flex items-center justify-center border-4 border-green-200">
                             <div className="text-center">
                               <div className="text-6xl mb-4">📷</div>
                               <div className="text-2xl font-bold text-gray-700">
@@ -1211,12 +1200,12 @@ export default function ChildPage() {
                       })()}
                     </div>
                     
-                    {/* 右侧：文字和控制区域 */}
-                    <div className="w-1/2 flex flex-col items-center justify-center p-6 space-y-6">
-                      {/* 英文单词 */}
-                      <div className="text-6xl font-bold text-green-600 font-kid text-center">
-                        {(currentItem as Word).text || <span className="font-kid-chinese">{t.unknownWord}</span>}
-                      </div>
+                      {/* 文字和控制区域 - 移动端底部，桌面端右侧 */}
+                      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 space-y-6">
+                        {/* 英文单词 */}
+                        <div className="text-4xl md:text-6xl font-bold text-green-600 font-kid text-center">
+                          {(currentItem as Word).text || <span className="font-kid-chinese">{t.unknownWord}</span>}
+                        </div>
                       
                       {/* 语音播放按钮 */}
                       <button
@@ -1249,16 +1238,16 @@ export default function ChildPage() {
                   </>
                 )}
 
-                {/* 句子复习 - 左右分栏 */}
+                {/* 句子复习 - 响应式布局 */}
                 {reviewMode === 'sentences' && currentItem && (
                   <>
-                    {/* 左侧：图片区 - 更大尺寸，无动画 */}
-                    <div className="w-1/2 flex items-center justify-center p-4">
+                      {/* 图片区 - 移动端顶部，桌面端左侧 */}
+                      <div className="w-full lg:w-1/2 flex items-center justify-center p-4">
                       {(() => {
                         const sentenceItem = currentItem as Sentence;
                         if (!sentenceItem || !sentenceItem.text) {
                           return (
-                            <div className="w-full h-96 bg-gradient-to-br from-red-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-red-200 shadow-2xl">
+                            <div className="w-full h-64 md:h-96 bg-gradient-to-br from-red-100 to-pink-100 rounded-3xl flex items-center justify-center border-4 border-red-200 shadow-2xl">
                               <div className="text-center">
                                 <div className="text-6xl mb-4">🤔</div>
                                 <div className="text-gray-600 text-xl font-medium font-kid-chinese">
@@ -1275,7 +1264,7 @@ export default function ChildPage() {
                         
                         if (isLoading) {
                           return (
-                            <div className="w-full h-96 rounded-3xl bg-gradient-to-br from-purple-100 to-pink-100 shadow-2xl flex items-center justify-center border-4 border-purple-200">
+                            <div className="w-full h-64 md:h-96 rounded-3xl bg-gradient-to-br from-purple-100 to-pink-100 shadow-2xl flex items-center justify-center border-4 border-purple-200">
                               <div className="text-center">
                                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mx-auto mb-6"></div>
                                 <div className="text-2xl font-bold text-gray-700 font-kid-chinese">
@@ -1288,7 +1277,7 @@ export default function ChildPage() {
                         
                         if (imageUrl) {
                           return (
-                            <div className="w-full h-96 rounded-3xl shadow-2xl overflow-hidden border-4 border-purple-200">
+                            <div className="w-full h-64 md:h-96 rounded-3xl shadow-2xl overflow-hidden border-4 border-purple-200">
                               <Image
                                 src={imageUrl}
                                 alt={t.sentenceImage}
@@ -1305,7 +1294,7 @@ export default function ChildPage() {
                         }
                         
                         return (
-                          <div className="w-full h-96 rounded-3xl bg-gradient-to-br from-purple-100 to-pink-100 shadow-2xl flex items-center justify-center border-4 border-purple-200">
+                          <div className="w-full h-64 md:h-96 rounded-3xl bg-gradient-to-br from-purple-100 to-pink-100 shadow-2xl flex items-center justify-center border-4 border-purple-200">
                             <div className="text-center">
                               <div className="text-6xl mb-4">📝</div>
                               <div className="text-2xl font-bold text-gray-700 font-kid-chinese">
@@ -1317,12 +1306,12 @@ export default function ChildPage() {
                       })()}
                     </div>
                     
-                    {/* 右侧：文字和控制区域 */}
-                    <div className="w-1/2 flex flex-col items-center justify-center p-6 space-y-6">
-                      {/* 英文句子 */}
-                      <div className="text-3xl font-bold text-purple-600 leading-relaxed font-kid text-center">
-                        {(currentItem as Sentence).text}
-                      </div>
+                      {/* 文字和控制区域 - 移动端底部，桌面端右侧 */}
+                      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 space-y-6">
+                        {/* 英文句子 */}
+                        <div className="text-2xl md:text-3xl font-bold text-purple-600 leading-relaxed font-kid text-center">
+                          {(currentItem as Sentence).text}
+                        </div>
                       
                       {/* 语音播放按钮 */}
                       <button
@@ -1354,17 +1343,33 @@ export default function ChildPage() {
                     </div>
                   </>
                 )}
+                </div>
               </div>
+            
+            {/* 导航按钮区域 */}
+            <div className="flex justify-between items-center mt-6">
+              <button
+                onClick={handlePrevious}
+                disabled={currentIndex === 0}
+                className="p-3 md:p-4 rounded-full bg-white shadow-xl hover:shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed transform hover:scale-110 transition-all duration-300"
+              >
+                <ArrowLeftIcon className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+              </button>
+              
+              <div className="text-center">
+                <p className="text-lg font-medium text-gray-700">
+                  {currentIndex + 1} / {data.length}
+                </p>
+              </div>
+              
+              <button
+                onClick={handleNext}
+                disabled={currentIndex === data.length - 1}
+                className="p-3 md:p-4 rounded-full bg-white shadow-xl hover:shadow-2xl disabled:opacity-30 disabled:cursor-not-allowed transform hover:scale-110 transition-all duration-300"
+              >
+                <ArrowRightIcon className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+              </button>
             </div>
-
-            {/* 右侧导航按钮 */}
-            <button
-              onClick={handleNext}
-              disabled={currentIndex === data.length - 1}
-              className="p-6 rounded-full bg-white shadow-2xl hover:shadow-3xl disabled:opacity-30 disabled:cursor-not-allowed transform hover:scale-110 transition-all duration-300"
-            >
-              <ArrowRightIcon className="h-16 w-16 text-blue-500" />
-            </button>
           </div>
         </div>
 
