@@ -1376,11 +1376,12 @@ export default function ChildPage() {
                 <button
                   key={index}
                   onClick={() => handleDotNavigation(index)}
-                  className={`w-4 h-4 rounded-full transition-all duration-300 transform hover:scale-125 ${
+                  className={`w-4 h-4 rounded-full aspect-square transition-all duration-300 transform hover:scale-125 ${
                     index === currentIndex
                       ? 'bg-gradient-to-r from-blue-500 to-purple-500 scale-125 shadow-lg'
                       : 'bg-gray-300 hover:bg-gray-400 shadow-md'
                   }`}
+                  style={{ minWidth: '16px', minHeight: '16px' }}
                 />
               ))}
             </div>
