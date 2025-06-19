@@ -1134,7 +1134,7 @@ export default function ChildPage() {
 
                   {/* 单词复习 - 响应式布局 */}
                   {reviewMode === 'words' && currentItem && (
-                    <>
+                    <div className="w-full flex flex-col lg:flex-row items-center justify-center p-4 min-h-[400px] sm:min-h-[500px]">
                       {/* 图片区 - 移动端顶部，桌面端左侧 */}
                       <div className="w-full lg:w-1/2 flex items-center justify-center p-2 sm:p-4">
                       {(() => {
@@ -1235,12 +1235,12 @@ export default function ChildPage() {
                         ))}
                       </div>
                     </div>
-                  </>
+                  </div>
                 )}
 
-                                      {/* 句子复习 - 响应式布局 */}
+                {/* 句子复习 - 响应式布局 */}
                 {reviewMode === 'sentences' && currentItem && (
-                  <>
+                  <div className="w-full flex flex-col lg:flex-row items-center justify-center p-4 min-h-[400px] sm:min-h-[500px]">
                       {/* 图片区 - 移动端顶部，桌面端左侧 */}
                       <div className="w-full lg:w-1/2 flex items-center justify-center p-2 sm:p-4">
                       {(() => {
@@ -1341,7 +1341,7 @@ export default function ChildPage() {
                         ))}
                       </div>
                     </div>
-                  </>
+                  </div>
                 )}
                 </div>
               </div>
@@ -1373,25 +1373,7 @@ export default function ChildPage() {
           </div>
         </div>
 
-        {/* 底部进度指示 - 紧凑设计 */}
-        <div className="p-2 sm:p-4 bg-white/80 backdrop-blur-sm">
-          <div className="w-full max-w-sm sm:max-w-2xl lg:max-w-4xl mx-auto px-2">
-            <div className="flex justify-center space-x-3">
-              {data.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleDotNavigation(index)}
-                  className={`w-4 h-4 rounded-full aspect-square transition-all duration-300 transform hover:scale-125 ${
-                    index === currentIndex
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 scale-125 shadow-lg'
-                      : 'bg-gray-300 hover:bg-gray-400 shadow-md'
-                  }`}
-                  style={{ minWidth: '16px', minHeight: '16px' }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
+
       </div>
     );
   };

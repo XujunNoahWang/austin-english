@@ -225,9 +225,9 @@ export default function WordImageGamePage() {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex flex-col">
       {/* 头部导航 - 紧凑设计 */}
-      <div className="flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-lg relative z-50">
+      <div className="flex justify-between items-center p-4 bg-white/80 backdrop-blur-sm shadow-lg sticky top-0 z-50">
         <button
           onClick={() => window.history.back()}
           className="p-3 rounded-2xl bg-white shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
@@ -254,8 +254,8 @@ export default function WordImageGamePage() {
         </button>
       </div>
 
-      {/* 主要内容区域 - 与复习页面一致的布局 */}
-      <div className="flex-1 flex items-center justify-center p-6 overflow-hidden relative z-10" style={{ transform: 'translateY(-50px)' }}>
+      {/* 主要内容区域 - 支持滚动的布局 */}
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 relative z-10 min-h-[600px]">
         {currentQuestion ? (
           <div className="w-full h-full max-w-7xl flex flex-col items-center justify-center text-center">
             {/* 题目单词 */}
@@ -279,13 +279,13 @@ export default function WordImageGamePage() {
             </div>
 
             {/* 图片选项 */}
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 max-w-4xl mx-auto w-full">
               {currentQuestion.options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => handleOptionClick(index)}
                   disabled={selectedOption !== null}
-                  className={`relative w-full h-80 cursor-pointer transform transition-all duration-300 bg-white rounded-2xl shadow-xl hover:shadow-2xl overflow-hidden border-4 block ${
+                  className={`relative w-full h-48 sm:h-64 lg:h-80 cursor-pointer transform transition-all duration-300 bg-white rounded-2xl shadow-xl hover:shadow-2xl overflow-hidden border-4 block ${
                     selectedOption === null 
                       ? 'border-blue-200 hover:border-blue-400 hover:scale-105 active:scale-95' 
                       : selectedOption === index
