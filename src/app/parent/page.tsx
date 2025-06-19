@@ -431,7 +431,7 @@ export default function ParentPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-between items-start mb-6 -mt-3">
             {/* 左侧：导航按钮和标题区域 */}
-            <div className="flex items-start gap-4" style={{ marginLeft: '-96px' }}>
+            <div className="flex items-start gap-4" style={{ marginLeft: 'clamp(-96px, -5vw, 0px)' }}>
               {/* 导航按钮 */}
               <div className="flex gap-2 mt-1">
                 <button
@@ -477,9 +477,11 @@ export default function ParentPage() {
             </div>
           </div>
 
-          <div className="flex gap-8 -mt-2">
-            {/* 字母列 */}
-            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl h-[calc(100vh-8.3rem)] flex flex-col basis-[300px] max-w-[360px] min-w-[240px]">
+          {/* 三栏布局容器 - 支持水平滚动 */}
+          <div className="overflow-x-auto -mt-2">
+            <div className="flex gap-4 lg:gap-8 min-w-[960px] pb-4">
+              {/* 字母列 */}
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 lg:p-6 rounded-xl min-h-[600px] max-h-[800px] flex flex-col w-[280px] lg:w-[320px] flex-shrink-0">
               <h2 className="text-xl font-semibold mb-4 text-primary-600 dark:text-primary-300">
                 {t.letterConfig}
               </h2>
@@ -490,10 +492,10 @@ export default function ParentPage() {
                   </div>
                 )}
                 {letters.map((letter) => (
-                  <div key={letter.id} className="flex items-center gap-3">
+                  <div key={letter.id} className="flex items-center gap-2 lg:gap-3">
                     <button
                       onClick={() => toggleLetterVisibility(letter.id)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
+                      className={`flex items-center gap-1 lg:gap-2 px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-sm lg:text-base ${
                         letter.isVisible
                           ? 'bg-primary-500 text-white'
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -525,8 +527,8 @@ export default function ParentPage() {
               </div>
             </div>
 
-            {/* 单词列 */}
-            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl h-[calc(100vh-8.3rem)] flex flex-col basis-[470px] max-w-[570px] min-w-[310px]">
+              {/* 单词列 */}
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 lg:p-6 rounded-xl min-h-[600px] max-h-[800px] flex flex-col w-[320px] lg:w-[440px] flex-shrink-0">
               <h2 className="text-xl font-semibold mb-4 text-primary-600 dark:text-primary-300">
                 {t.wordManagement}
               </h2>
@@ -604,8 +606,8 @@ export default function ParentPage() {
               </div>
             </div>
 
-            {/* 句子列 */}
-            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl h-[calc(100vh-8.3rem)] flex flex-col flex-1 min-w-[110px]">
+              {/* 句子列 */}
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 lg:p-6 rounded-xl min-h-[600px] max-h-[800px] flex flex-col w-[300px] lg:w-[380px] flex-shrink-0">
               <h2 className="text-xl font-semibold mb-4 text-primary-600 dark:text-primary-300">
                 {t.sentenceManagement}
               </h2>
@@ -680,6 +682,7 @@ export default function ParentPage() {
                     </div>
                   </div>
                 ))}
+              </div>
               </div>
             </div>
           </div>
