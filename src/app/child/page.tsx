@@ -837,11 +837,11 @@ export default function ChildPage() {
           <div className="w-[72px] flex-shrink-0"></div>
           
           <div className="text-center flex-1">
-            <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4 font-kid-chinese">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4 font-kid-chinese whitespace-nowrap">
               🌟 {t.title} 🌟
             </h1>
             {currentProfile && (
-              <p className="text-2xl text-gray-700 dark:text-gray-300 font-medium font-kid-chinese">
+              <p className="text-xl sm:text-2xl text-gray-700 dark:text-gray-300 font-medium font-kid-chinese">
                 {currentProfile.name}{t.childGreeting}
               </p>
             )}
