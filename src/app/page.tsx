@@ -268,7 +268,7 @@ export default function Home() {
   const t = texts[language];
 
   return (
-    <main className="h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex flex-col overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex flex-col">
       {/* Hero Section - Jony Ive Inspired Design */}
       <section className="relative flex-shrink-0 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -368,11 +368,11 @@ export default function Home() {
       </section>
 
       {/* Profile Management Section */}
-      <section className="flex-1 px-4 sm:px-6 lg:px-8" style={{paddingTop: '20px'}}>
+      <section className="flex-1 px-4 sm:px-6 lg:px-8 pb-8" style={{paddingTop: '20px'}}>
         <div className="max-w-6xl mx-auto w-full">
-          {/* 档案区外部容器 - 固定高度 */}
-          <div className="h-80 bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20" style={{marginBottom: '20px'}}>
-            <div className="w-full h-full p-6 flex flex-col">
+          {/* 档案区外部容器 - 自适应高度 */}
+          <div className="min-h-80 bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20" style={{marginBottom: '20px'}}>
+            <div className="w-full p-6 flex flex-col">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-1">
@@ -446,7 +446,7 @@ export default function Home() {
               )}
 
               {/* Profile List */}
-              <div className="flex-1">
+              <div className="w-full">
                 {isLoading ? (
                   <div className="text-center py-4">
                     <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mb-3"></div>
@@ -542,7 +542,7 @@ export default function Home() {
           </div>
 
           {/* Entry Points Section - 与档案区同宽，内部容器对齐 */}
-          <div className="w-full">
+          <div className="w-full mb-8">
             <div className="flex flex-col lg:flex-row gap-6">
               <Link 
                 href={canProceed ? "/parent" : "#"} 
