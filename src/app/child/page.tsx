@@ -1077,7 +1077,7 @@ export default function ChildPage() {
 
         {/* 主要内容区域 - 自然流式布局 */}
         <div className="flex-1 p-4 md:p-6">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             {/* 内容卡片区域 */}
             <div 
               key={`${currentItem?.id || 'no-item'}-${forceUpdate}-${currentIndex}`}
