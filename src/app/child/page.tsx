@@ -826,32 +826,7 @@ export default function ChildPage() {
     window.dispatchEvent(new CustomEvent('profileDataChanged'));
   };
 
-  // 处理dot导航点击，包含音频播放
-  const handleDotNavigation = (index: number) => {
-    setCurrentIndex(index);
-    
-    // 延迟一点播放音频，确保状态更新完成
-    setTimeout(() => {
-      const data = getCurrentData();
-      const item = data[index];
-      if (!item) return;
 
-      if (reviewMode === 'letters') {
-        const letter = item as Letter;
-        playLetterSound(letter);
-      } else if (reviewMode === 'words') {
-        const word = item as Word;
-        if (word.text) {
-          playAudio(word.text, 0.8);
-        }
-      } else if (reviewMode === 'sentences') {
-        const sentence = item as Sentence;
-        if (sentence.text) {
-          playAudio(sentence.text, 0.7);
-        }
-      }
-    }, 100);
-  };
 
   const renderSelectionMode = () => (
     <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-8">
