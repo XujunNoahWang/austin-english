@@ -479,7 +479,7 @@ export default function ParentPage() {
 
           {/* 三栏布局容器 - 支持水平滚动 */}
           <div className="overflow-x-auto -mt-2">
-            <div className="flex gap-4 lg:gap-8 min-w-[960px] pb-4">
+            <div className="flex gap-4 lg:gap-8 min-w-[1060px] pb-4">
               {/* 字母列 */}
               <div className="bg-gray-50 dark:bg-gray-800 p-4 lg:p-6 rounded-xl min-h-[600px] max-h-[800px] flex flex-col w-[280px] lg:w-[320px] flex-shrink-0">
               <h2 className="text-xl font-semibold mb-4 text-primary-600 dark:text-primary-300">
@@ -607,7 +607,7 @@ export default function ParentPage() {
             </div>
 
               {/* 句子列 */}
-              <div className="bg-gray-50 dark:bg-gray-800 p-4 lg:p-6 rounded-xl min-h-[600px] max-h-[800px] flex flex-col w-[300px] lg:w-[380px] flex-shrink-0">
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 lg:p-6 rounded-xl min-h-[600px] max-h-[800px] flex flex-col w-[400px] lg:w-[500px] flex-shrink-0">
               <h2 className="text-xl font-semibold mb-4 text-primary-600 dark:text-primary-300">
                 {t.sentenceManagement}
               </h2>
@@ -650,7 +650,7 @@ export default function ParentPage() {
                     onDragEnd={handleSentenceDragEnd}
                     onDragOver={e => sentenceSortType === 'manual' && e.preventDefault()}
                   >
-                    <span className="text-gray-900 dark:text-white break-all max-w-[180px] md:max-w-[320px]">{sentence.text}</span>
+                    <span className="text-gray-900 dark:text-white break-words max-w-[250px] lg:max-w-[350px]">{sentence.text}</span>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <div className="flex items-center">
                         {[1,2,3,4,5].map(n => (
