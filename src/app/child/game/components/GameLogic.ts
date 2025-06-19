@@ -3,6 +3,10 @@ import { Word } from '../../../../types/profile';
 // 图片缓存管理
 const IMAGE_CACHE_KEY = 'austin_english_image_cache_permanent';
 
+// Unsplash API 配置
+const UNSPLASH_ACCESS_KEY = '6AR8cex_BvRH-w1oUOnpE5pMn8NCNKjfNiSYat9t_kE';
+const UNSPLASH_API_URL = 'https://api.unsplash.com/search/photos';
+
 // 快速占位符生成
 const getQuickPlaceholder = (word: string, color: string = 'e2e8f0'): string => {
   return `data:image/svg+xml;charset=UTF-8,%3csvg width='400' height='300' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='%23${color}'/%3e%3ctext x='50%25' y='50%25' font-size='24' font-family='Arial' text-anchor='middle' dy='.3em' fill='%23666'%3e${encodeURIComponent(word.toUpperCase())}%3c/text%3e%3c/svg%3e`;
@@ -37,6 +41,58 @@ export const cacheImage = (word: string, imageUrl: string) => {
       } catch {
       // 静默处理缓存保存错误
     }
+};
+
+// 获取单词图片的函数
+const getWordImage = async (word: string): Promise<string> => {
+  try {
+    // 首先检查缓存
+    const cachedImage = getCachedImage(word);
+    
+    if (cachedImage) {
+      return cachedImage;
+    }
+    
+    // 如果没有缓存，从API获取
+    const response = await fetch(
+      `${UNSPLASH_API_URL}?query=${encodeURIComponent(word)}&per_page=1&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`
+    );
+    
+    if (!response.ok) {
+      console.error(`Unsplash API error for word "${word}": ${response.status} ${response.statusText}`);
+      if (response.status === 403) {
+        console.warn('API rate limit exceeded, using placeholder image');
+        const placeholderUrl = getQuickPlaceholder(word);
+        // 即使是占位图也要缓存，避免重复请求
+        cacheImage(word, placeholderUrl);
+        return placeholderUrl;
+      }
+      throw new Error('Failed to fetch image');
+    }
+    
+    const data = await response.json();
+    
+    if (data.results && data.results.length > 0) {
+      // 总是选择第一张图片，确保一致性
+      const selectedImage = data.results[0].urls.small;
+      
+      // 永久缓存这张图片
+      cacheImage(word, selectedImage);
+      
+      return selectedImage;
+    } else {
+      const placeholderUrl = getQuickPlaceholder(word);
+      // 缓存占位图
+      cacheImage(word, placeholderUrl);
+      return placeholderUrl;
+    }
+  } catch (error) {
+    console.error(`Error fetching image for word "${word}":`, error);
+    const placeholderUrl = getQuickPlaceholder(word);
+    // 缓存占位图
+    cacheImage(word, placeholderUrl);
+    return placeholderUrl;
+  }
 };
 
 
@@ -84,20 +140,11 @@ export const generateGameQuestion = async (words: Word[], allWords?: Word[]): Pr
   }
 
   try {
-    // 优化的图片获取逻辑
-    const getImageForWord = (word: string): string => {
-      // 首先检查缓存
-      const cached = getCachedImage(word);
-      if (cached) {
-        return cached;
-      }
-      
-      // 如果没有缓存，返回快速SVG占位符
-      return getQuickPlaceholder(word);
-    };
-
-    const targetImageUrl = getImageForWord(targetWord.text);
-    const wrongImages = wrongOptions.map(word => getImageForWord(word.text));
+    // 异步获取所有图片
+    const targetImageUrl = await getWordImage(targetWord.text);
+    const wrongImages = await Promise.all(
+      wrongOptions.map(word => getWordImage(word.text))
+    );
 
     // 创建选项数组
     const options: GameOption[] = [
