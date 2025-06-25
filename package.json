@@ -1,6 +1,6 @@
 {
   "name": "austin-english",
-  "version": "0.1.0",
+  "version": "2025.6.25",
   "private": true,
   "scripts": {
     "dev": "npm run kill-port && next dev",

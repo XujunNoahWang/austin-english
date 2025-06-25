@@ -282,21 +282,10 @@ export default function ChildPage() {
   const [sentenceImages, setSentenceImages] = useState<Record<string, string>>({});
   const [loadingSentenceImages, setLoadingSentenceImages] = useState<Record<string, boolean>>({});
   const [language, setLanguage] = useState<'zh' | 'en'>('zh');
-  const [pendingFirstAudio, setPendingFirstAudio] = useState<string | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   // 获取当前语言的文本
   const t = getChildTexts(language);
-
-  // 预加载音频函数
-  const preloadAudio = (text: string) => {
-    if ('speechSynthesis' in window) {
-      // 初始化语音合成系统
-      speechSynthesis.getVoices();
-      // 保存待播放的文本
-      setPendingFirstAudio(text);
-    }
-  };
 
   // 播放语音函数
   const playAudio = (text: string, rate: number = 0.8) => {
@@ -376,7 +365,7 @@ export default function ChildPage() {
   };
 
   // 获取当前项目（考虑随机模式）
-  const getCurrentItem = () => {
+  const getCurrentItem = useCallback(() => {
     if (currentData.length === 0) return null;
     
     if (isRandomMode && randomOrder.length > 0) {
@@ -385,7 +374,7 @@ export default function ChildPage() {
     }
     
     return currentData[currentIndex];
-  };
+  }, [currentData, isRandomMode, randomOrder, currentIndex]);
 
   const currentItem = getCurrentItem();
 
@@ -564,37 +553,57 @@ export default function ChildPage() {
     if (currentIndex > 0) {
       const newIndex = currentIndex - 1;
       setCurrentIndex(newIndex);
-      // 自动播放音频
-      const currentData = getCurrentData();
-      if (currentData[newIndex]) {
-        setTimeout(() => {
+      // 自动播放音频 - 使用正确的项目获取方式
+      setTimeout(() => {
+        // 获取新索引对应的项目
+        const data = getCurrentData();
+        let itemToPlay = null;
+        
+        if (isRandomMode && randomOrder.length > 0) {
+          const randomIndex = randomOrder[newIndex];
+          itemToPlay = data[randomIndex];
+        } else {
+          itemToPlay = data[newIndex];
+        }
+        
+        if (itemToPlay) {
           if (reviewMode === 'words') {
-            playAudio((currentData[newIndex] as Word).text, 0.8);
+            playAudio((itemToPlay as Word).text, 0.8);
           } else if (reviewMode === 'sentences') {
-            playAudio((currentData[newIndex] as Sentence).text, 0.7);
+            playAudio((itemToPlay as Sentence).text, 0.7);
           }
-        }, 100);
-      }
+        }
+      }, 100);
     }
-  }, [currentIndex, getCurrentData, reviewMode]);
+  }, [currentIndex, getCurrentData, reviewMode, isRandomMode, randomOrder]);
 
   const handleNext = useCallback(() => {
     const data = getCurrentData();
     if (currentIndex < data.length - 1) {
       const newIndex = currentIndex + 1;
       setCurrentIndex(newIndex);
-      // 自动播放音频
-      if (data[newIndex]) {
-        setTimeout(() => {
+      // 自动播放音频 - 使用正确的项目获取方式
+      setTimeout(() => {
+        // 获取新索引对应的项目
+        let itemToPlay = null;
+        
+        if (isRandomMode && randomOrder.length > 0) {
+          const randomIndex = randomOrder[newIndex];
+          itemToPlay = data[randomIndex];
+        } else {
+          itemToPlay = data[newIndex];
+        }
+        
+        if (itemToPlay) {
           if (reviewMode === 'words') {
-            playAudio((data[newIndex] as Word).text, 0.8);
+            playAudio((itemToPlay as Word).text, 0.8);
           } else if (reviewMode === 'sentences') {
-            playAudio((data[newIndex] as Sentence).text, 0.7);
+            playAudio((itemToPlay as Sentence).text, 0.7);
           }
-        }, 100);
-      }
+        }
+      }, 100);
     }
-  }, [currentIndex, getCurrentData, reviewMode]);
+  }, [currentIndex, getCurrentData, reviewMode, isRandomMode, randomOrder]);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (reviewMode === 'selection') return;
@@ -613,17 +622,26 @@ export default function ChildPage() {
     };
   }, [handleKeyPress]);
 
-  // 监听第一次加载，当页面完全加载后立即播放预加载的音频
+  // 监听第一次加载，当页面完全加载后立即播放当前项目的音频
   useEffect(() => {
     const currentData = getCurrentData();
-    if (currentData.length > 0 && pendingFirstAudio && isFirstLoad && (reviewMode === 'words' || reviewMode === 'sentences')) {
-      // 页面完全加载后立即播放预加载的音频
-      const rate = reviewMode === 'sentences' ? 0.7 : 0.8;
-      playAudio(pendingFirstAudio, rate);
+    if (currentData.length > 0 && isFirstLoad && (reviewMode === 'words' || reviewMode === 'sentences')) {
+      // 获取当前应该显示的项目
+      const currentItemToPlay = getCurrentItem();
+      
+      if (currentItemToPlay) {
+        // 页面完全加载后立即播放当前项目的音频
+        const rate = reviewMode === 'sentences' ? 0.7 : 0.8;
+        const textToPlay = reviewMode === 'words' 
+          ? (currentItemToPlay as Word).text 
+          : (currentItemToPlay as Sentence).text;
+        
+        playAudio(textToPlay, rate);
+      }
+      
       setIsFirstLoad(false); // 标记第一次加载已完成
-      setPendingFirstAudio(null); // 清除待播放音频
     }
-  }, [getCurrentData, pendingFirstAudio, isFirstLoad, reviewMode]);
+  }, [getCurrentData, getCurrentItem, isFirstLoad, reviewMode]);
 
   const playLetterSound = (letter: Letter) => {
     if (typeof window !== 'undefined' && (window as typeof window & { letterAudioPlayer?: { playLetter: (letter: string, index?: number) => void } }).letterAudioPlayer) {
@@ -886,10 +904,7 @@ export default function ChildPage() {
               setReviewMode('words');
               setCurrentIndex(0);
               setIsFirstLoad(true);
-              // 预加载第一个单词的音频
-              if (currentProfile?.data.words && currentProfile.data.words.length > 0) {
-                preloadAudio(currentProfile.data.words[0].text);
-              }
+              // 音频播放将由useEffect处理，无需预加载
             }}
             className="bg-white rounded-3xl p-12 shadow-2xl hover:shadow-3xl transition-all duration-300 cursor-pointer border-4 border-green-200 hover:border-green-400 transform hover:scale-105 hover:rotate-1"
           >
@@ -913,10 +928,7 @@ export default function ChildPage() {
               setReviewMode('sentences');
               setCurrentIndex(0);
               setIsFirstLoad(true);
-              // 预加载第一个句子的音频
-              if (currentProfile?.data.sentences && currentProfile.data.sentences.length > 0) {
-                preloadAudio(currentProfile.data.sentences[0].text);
-              }
+              // 音频播放将由useEffect处理，无需预加载
             }}
             className="bg-white rounded-3xl p-12 shadow-2xl hover:shadow-3xl transition-all duration-300 cursor-pointer border-4 border-purple-200 hover:border-purple-400 transform hover:scale-105 hover:-rotate-1"
           >
