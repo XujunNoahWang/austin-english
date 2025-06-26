@@ -782,6 +782,71 @@ export default function ChildPage() {
             return;
           }
           break;
+        case 'p':
+          if (phoneme === '/p/') {
+            pronunciationIndex = 1; // 播放 p_sound.MP3
+          }
+          break;
+        case 'q':
+          if (phoneme === '/k/') {
+            pronunciationIndex = 1; // 播放 q_sound.MP3
+          }
+          break;
+        case 'r':
+          if (phoneme === '/r/') {
+            pronunciationIndex = 1; // 播放 r_sound.MP3
+          }
+          break;
+        case 's':
+          if (phoneme === '/s/') {
+            pronunciationIndex = 1; // 播放 s_sound.MP3
+          }
+          break;
+        case 't':
+          if (phoneme === '/t/') {
+            pronunciationIndex = 1; // 播放 t_sound.MP3
+          }
+          break;
+        case 'u':
+          if (phoneme === '/ʌ/') {
+            pronunciationIndex = 1; // 播放 u_sound.MP3
+          } else if (phoneme === '/juː/') {
+            // u_long.MP3 不存在，使用语音合成
+            if ('speechSynthesis' in window) {
+              const utterance = new SpeechSynthesisUtterance('you');
+              utterance.lang = 'en-US';
+              utterance.rate = 0.6;
+              utterance.pitch = 1;
+              speechSynthesis.speak(utterance);
+            }
+            return;
+          }
+          break;
+        case 'v':
+          if (phoneme === '/v/') {
+            pronunciationIndex = 1; // 播放 v_sound.MP3
+          }
+          break;
+        case 'w':
+          if (phoneme === '/w/') {
+            pronunciationIndex = 1; // 播放 w_sound.MP3
+          }
+          break;
+        case 'x':
+          if (phoneme === '/ks/') {
+            pronunciationIndex = 1; // 播放 x_sound.MP3
+          }
+          break;
+        case 'y':
+          if (phoneme === '/j/') {
+            pronunciationIndex = 1; // 播放 y_sound.MP3
+          }
+          break;
+        case 'z':
+          if (phoneme === '/z/') {
+            pronunciationIndex = 1; // 播放 z_sound.MP3
+          }
+          break;
       }
       
 

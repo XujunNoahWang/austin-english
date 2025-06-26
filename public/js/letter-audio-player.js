@@ -23,7 +23,18 @@ class LetterAudioPlayer {
             'l': ['l.MP3', 'l_sound.MP3'],  // 字母名称 L, 音素 /l/
             'm': ['m.MP3', 'm_sound.MP3'],  // 字母名称 M, 音素 /m/
             'n': ['n.MP3', 'n_sound.MP3'],  // 字母名称 N, 音素 /n/
-            'o': ['o.MP3', 'o_a_sound.MP3', 'o_long.MP3']  // 字母名称 O, 音素 /ɒ/, 音素 /oʊ/ (o_long.MP3不存在)
+            'o': ['o.MP3', 'o_a_sound.MP3', 'o_long.MP3'],  // 字母名称 O, 音素 /ɒ/, 音素 /oʊ/ (o_long.MP3不存在)
+            'p': ['p.MP3', 'p_sound.MP3'],  // 字母名称 P, 音素 /p/
+            'q': ['q.MP3', 'q_sound.MP3'],  // 字母名称 Q, 音素 /k/
+            'r': ['r.MP3', 'r_sound.MP3'],  // 字母名称 R, 音素 /r/
+            's': ['s.MP3', 's_sound.MP3'],  // 字母名称 S, 音素 /s/
+            't': ['t.MP3', 't_sound.MP3'],  // 字母名称 T, 音素 /t/
+            'u': ['u.MP3', 'u_sound.MP3', 'u_long.MP3'],   // 字母名称 U, 音素 /ʌ/, 音素 /juː/ (u_long.MP3不存在)
+            'v': ['v.MP3', 'v_sound.MP3'],   // 字母名称 V, 音素 /v/
+            'w': ['w.MP3', 'w_sound.MP3'],   // 字母名称 W, 音素 /w/
+            'x': ['x.MP3', 'x_sound.MP3'],   // 字母名称 X, 音素 /ks/
+            'y': ['y.MP3', 'y_sound.MP3'],   // 字母名称 Y, 音素 /j/
+            'z': ['z.MP3', 'z_sound.MP3']    // 字母名称 Z, 音素 /z/
         };
         
 
