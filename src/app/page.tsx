@@ -281,7 +281,7 @@ export default function Home() {
               </h1>
               <div className="ml-3 px-2 py-1 bg-gray-100 rounded-full">
                 <span className="text-xs font-medium text-gray-600">
-                  2025.6.18
+                  2025.6.25
                 </span>
               </div>
             </div>
